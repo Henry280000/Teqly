@@ -1,0 +1,45 @@
+/* Estilos del Footer */
+.site-footer {
+  background-color: #2c3e50;
+  color: white;
+  padding: 2rem 0;
+  margin-top: 3rem;
+}
+
+.site-footer h5,
+.site-footer h6 {
+  color: white;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.site-footer p {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.site-footer a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.site-footer a:hover {
+  color: white;
+}
+
+.site-footer hr {
+  background-color: rgba(255, 255, 255, 0.2);
+  opacity: 1;
+  margin: 1.5rem 0;
+}
+
+.site-footer .footer-copyright {
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+}
+
+/* Estilos adicionales */
+.hover-shadow:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
