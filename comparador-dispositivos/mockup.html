@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mockup - Teqly Comparador de Dispositivos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        
+        .mockup-section {
+            margin-bottom: 50px;
+            padding: 20px;
+            border: 2px dashed #95a5a6;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        
+        .mockup-title {
+            font-size: 1.5rem;
+            color: #34495e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .wireframe {
+            background: white;
+            border: 2px solid #bdc3c7;
+            border-radius: 4px;
+            padding: 20px;
+            margin: 10px 0;
+        }
+        
+        .header {
+            background: #34495e;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .nav {
+            background: #ecf0f1;
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .nav-item {
+            padding: 8px 15px;
+            background: #3498db;
+            color: white;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .hero {
+            background: #ecf0f1;
+            padding: 40px;
+            text-align: center;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .hero-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .hero-text {
+            color: #7f8c8d;
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .category-card {
+            background: #ecf0f1;
+            padding: 30px;
+            text-align: center;
+            border-radius: 4px;
+            border: 2px solid #bdc3c7;
+        }
+        
+        .icon-placeholder {
+            width: 60px;
+            height: 60px;
+            background: #3498db;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+        }
+        
+        .sidebar {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 4px;
+            width: 250px;
+            float: left;
+            margin-right: 20px;
+        }
+        
+        .filter-group {
+            background: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #bdc3c7;
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            overflow: hidden;
+        }
+        
+        .product-card {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 4px;
+            border: 2px solid #bdc3c7;
+        }
+        
+        .image-placeholder {
+            background: #95a5a6;
+            height: 150px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .detail-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .chart-placeholder {
+            background: #ecf0f1;
+            height: 250px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+            border: 2px dashed #95a5a6;
+        }
+        
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 20px auto;
+        }
+        
+        .compare-table {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .compare-col {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+            border: 2px solid #bdc3c7;
+        }
+        
+        .form-group {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #bdc3c7;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Mockup - Teqly</h1>
+        <p class="subtitle">Comparador de Dispositivos Electrónicos en México</p>
+        
+        <!-- PÁGINA 1: HOME -->
+        <div class="mockup-section">
+            <h2 class="mockup-title">1. Página Principal (Home)</h2>
+            <div class="wireframe">
+                <div class="header">
+                    TEQLY - LOGO
+                </div>
+                <div class="nav">
+                    <div class="nav-item">Inicio</div>
+                    <div class="nav-item">Categorías</div>
+                    <div class="nav-item">Comparar</div>
+                    <div class="nav-item">Búsqueda Inteligente</div>
+                </div>
+                <div class="hero">
+                    <div class="hero-title">Compara Dispositivos Electrónicos</div>
+                    <div class="hero-text">Encuentra el mejor producto para tus necesidades</div>
+                </div>
+                <h3 style="margin: 20px 0; color: #34495e;">Categorías Disponibles:</h3>
+                <div class="category-grid">
+                    <div class="category-card">
+                        <div class="icon-placeholder"></div>
+                        <strong>Celulares</strong>
+                        <p style="font-size: 0.8rem; color: #7f8c8d;">10 productos</p>
+                    </div>
+                    <div class="category-card">
+                        <div class="icon-placeholder"></div>
+                        <strong>Tablets</strong>
+                        <p style="font-size: 0.8rem; color: #7f8c8d;">5 productos</p>
+                    </div>
+                    <div class="category-card">
+                        <div class="icon-placeholder"></div>
+                        <strong>Monitores</strong>
+                        <p style="font-size: 0.8rem; color: #7f8c8d;">5 productos</p>
+                    </div>
+                    <div class="category-card">
+                        <div class="icon-placeholder"></div>
+                        <strong>Teclados</strong>
+                        <p style="font-size: 0.8rem; color: #7f8c8d;">5 productos</p>
+                    </div>
+                    <div class="category-card">
+                        <div class="icon-placeholder"></div>
+                        <strong>Ratones</strong>
+                        <p style="font-size: 0.8rem; color: #7f8c8d;">3 productos</p>
+                    </div>
+                    <div class="category-card">
+                        <div class="icon-placeholder"></div>
+                        <strong>Audífonos</strong>
+                        <p style="font-size: 0.8rem; color: #7f8c8d;">2 productos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PÁGINA 2: LISTA DE PRODUCTOS -->
+        <div class="mockup-section">
+            <h2 class="mockup-title">2. Lista de Productos (con Filtros)</h2>
+            <div class="wireframe clearfix">
+                <div class="header">
+                    TEQLY - Celulares
+                </div>
+                <div class="sidebar">
+                    <h4 style="margin-bottom: 15px; color: #2c3e50;">Filtros</h4>
+                    <div class="filter-group">
+                        <strong style="font-size: 0.9rem;">Precio</strong>
+                        <p style="font-size: 0.8rem; color: #7f8c8d;">Rango: $0 - $50,000</p>
+                    </div>
+                    <div class="filter-group">
+                        <strong style="font-size: 0.9rem;">Marca</strong>
+                        <p style="font-size: 0.8rem; color: #7f8c8d;">☐ Apple<br>☐ Samsung<br>☐ Xiaomi</p>
+                    </div>
+                    <div class="filter-group">
+                        <strong style="font-size: 0.9rem;">RAM</strong>
+                        <p style="font-size: 0.8rem; color: #7f8c8d;">☐ 4GB<br>☐ 8GB<br>☐ 12GB</p>
+                    </div>
+                    <div style="background: #3498db; color: white; padding: 10px; text-align: center; border-radius: 4px; margin-top: 15px;">
+                        Aplicar Filtros
+                    </div>
+                </div>
+                <div style="overflow: hidden;">
+                    <div class="product-grid">
+                        <div class="product-card">
+                            <div class="image-placeholder">IMAGEN</div>
+                            <strong>iPhone 15 Pro</strong>
+                            <p style="font-size: 0.9rem; color: #7f8c8d;">$28,999</p>
+                            <p style="font-size: 0.8rem;">Puntuación: 8.5/10</p>
+                        </div>
+                        <div class="product-card">
+                            <div class="image-placeholder">IMAGEN</div>
+                            <strong>Samsung Galaxy S24</strong>
+                            <p style="font-size: 0.9rem; color: #7f8c8d;">$24,999</p>
+                            <p style="font-size: 0.8rem;">Puntuación: 8.2/10</p>
+                        </div>
+                        <div class="product-card">
+                            <div class="image-placeholder">IMAGEN</div>
+                            <strong>Xiaomi 14</strong>
+                            <p style="font-size: 0.9rem; color: #7f8c8d;">$15,999</p>
+                            <p style="font-size: 0.8rem;">Puntuación: 7.8/10</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PÁGINA 3: DETALLE DEL PRODUCTO -->
+        <div class="mockup-section">
+            <h2 class="mockup-title">3. Detalle del Producto</h2>
+            <div class="wireframe">
+                <div class="header">
+                    TEQLY - iPhone 15 Pro
+                </div>
+                <div class="detail-layout">
+                    <div>
+                        <div class="image-placeholder" style="height: 300px;">
+                            IMAGEN PRODUCTO
+                        </div>
+                        <h3 style="margin: 15px 0; color: #2c3e50;">iPhone 15 Pro</h3>
+                        <p style="color: #7f8c8d; margin-bottom: 10px;">Apple</p>
+                        <p style="font-size: 1.5rem; color: #27ae60; font-weight: bold;">$28,999 MXN</p>
+                        <div style="background: #3498db; color: white; padding: 12px; text-align: center; border-radius: 4px; margin-top: 15px;">
+                            Agregar a Comparar
+                        </div>
+                    </div>
+                    <div>
+                        <div class="score-circle">8.5</div>
+                        <p style="text-align: center; color: #7f8c8d; margin-bottom: 20px;">Puntuación General</p>
+                        <div class="chart-placeholder">
+                            GRÁFICO RADAR<br>
+                            (Performance, Diseño, Cámara,<br>
+                            Batería, Conectividad)
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 30px; padding: 20px; background: #ecf0f1; border-radius: 4px;">
+                    <h4 style="margin-bottom: 15px; color: #2c3e50;">Especificaciones Técnicas:</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div style="background: white; padding: 10px; border-radius: 4px;">
+                            <strong>Procesador:</strong> A17 Pro
+                        </div>
+                        <div style="background: white; padding: 10px; border-radius: 4px;">
+                            <strong>RAM:</strong> 8GB
+                        </div>
+                        <div style="background: white; padding: 10px; border-radius: 4px;">
+                            <strong>Almacenamiento:</strong> 256GB
+                        </div>
+                        <div style="background: white; padding: 10px; border-radius: 4px;">
+                            <strong>Pantalla:</strong> 6.1" OLED
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PÁGINA 4: COMPARADOR -->
+        <div class="mockup-section">
+            <h2 class="mockup-title">4. Página de Comparación</h2>
+            <div class="wireframe">
+                <div class="header">
+                    TEQLY - Comparador (3 productos)
+                </div>
+                <div class="compare-table">
+                    <div class="compare-col">
+                        <strong style="color: #2c3e50;">Especificación</strong>
+                    </div>
+                    <div class="compare-col">
+                        <div class="icon-placeholder" style="width: 40px; height: 40px; margin: 0 auto 10px;"></div>
+                        <strong>iPhone 15 Pro</strong>
+                        <div style="margin: 10px 0; font-size: 1.2rem; color: #3498db; font-weight: bold;">8.5</div>
+                    </div>
+                    <div class="compare-col">
+                        <div class="icon-placeholder" style="width: 40px; height: 40px; margin: 0 auto 10px;"></div>
+                        <strong>Galaxy S24</strong>
+                        <div style="margin: 10px 0; font-size: 1.2rem; color: #3498db; font-weight: bold;">8.2</div>
+                    </div>
+                    <div class="compare-col">
+                        <div class="icon-placeholder" style="width: 40px; height: 40px; margin: 0 auto 10px;"></div>
+                        <strong>Xiaomi 14</strong>
+                        <div style="margin: 10px 0; font-size: 1.2rem; color: #3498db; font-weight: bold;">7.8</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; padding: 15px; background: #ecf0f1; border-radius: 4px;">
+                    <div style="margin-bottom: 15px;">
+                        <strong>Precio:</strong>
+                        <div style="display: flex; justify-content: space-around; margin-top: 10px;">
+                            <span>$28,999</span>
+                            <span>$24,999</span>
+                            <span>$15,999</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>RAM:</strong>
+                        <div style="display: flex; justify-content: space-around; margin-top: 10px;">
+                            <span>8GB</span>
+                            <span>12GB</span>
+                            <span>12GB</span>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>Almacenamiento:</strong>
+                        <div style="display: flex; justify-content: space-around; margin-top: 10px;">
+                            <span>256GB</span>
+                            <span>256GB</span>
+                            <span>512GB</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-placeholder" style="margin-top: 20px; height: 200px;">
+                    GRÁFICOS COMPARATIVOS<br>
+                    (Barras de progreso o radares pequeños)
+                </div>
+            </div>
+        </div>
+        
+        <!-- PÁGINA 5: BÚSQUEDA INTELIGENTE -->
+        <div class="mockup-section">
+            <h2 class="mockup-title">5. Búsqueda Inteligente</h2>
+            <div class="wireframe">
+                <div class="header">
+                    TEQLY - Búsqueda Inteligente
+                </div>
+                <div style="padding: 30px; background: #ecf0f1; border-radius: 4px; margin: 20px 0;">
+                    <h3 style="text-align: center; color: #2c3e50; margin-bottom: 25px;">
+                        Encuentra el producto perfecto para ti
+                    </h3>
+                    <div class="form-group">
+                        <strong>Categoría:</strong>
+                        <p style="font-size: 0.9rem; color: #7f8c8d; margin-top: 5px;">[ Seleccionar categoría ▼ ]</p>
+                    </div>
+                    <div class="form-group">
+                        <strong>Presupuesto máximo:</strong>
+                        <p style="font-size: 0.9rem; color: #7f8c8d; margin-top: 5px;">[ $_____ MXN ]</p>
+                    </div>
+                    <div class="form-group">
+                        <strong>Marca preferida (opcional):</strong>
+                        <p style="font-size: 0.9rem; color: #7f8c8d; margin-top: 5px;">[ Seleccionar marca ▼ ]</p>
+                    </div>
+                    <div class="form-group">
+                        <strong>Palabras clave:</strong>
+                        <p style="font-size: 0.9rem; color: #7f8c8d; margin-top: 5px;">[ Ej: gaming, portátil, profesional... ]</p>
+                    </div>
+                    <div style="background: #27ae60; color: white; padding: 15px; text-align: center; border-radius: 4px; margin-top: 20px; font-weight: bold;">
+                        🔍 BUSCAR RECOMENDACIONES
+                    </div>
+                </div>
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #2c3e50; margin-bottom: 15px;">Resultados (Top 5):</h4>
+                    <div style="display: grid; gap: 15px;">
+                        <div style="background: #fff3cd; padding: 15px; border-radius: 4px; border-left: 5px solid #f1c40f;">
+                            🥇 <strong>1. iPhone 15 Pro</strong> - Puntuación: 9.2/10
+                        </div>
+                        <div style="background: #e7f3ff; padding: 15px; border-radius: 4px; border-left: 5px solid #3498db;">
+                            🥈 <strong>2. Samsung Galaxy S24</strong> - Puntuación: 8.8/10
+                        </div>
+                        <div style="background: #ffe5d9; padding: 15px; border-radius: 4px; border-left: 5px solid #e67e22;">
+                            🥉 <strong>3. Xiaomi 14</strong> - Puntuación: 8.5/10
+                        </div>
+                        <div style="background: #f0f0f0; padding: 15px; border-radius: 4px; border-left: 5px solid #95a5a6;">
+                            4. Google Pixel 8 Pro - Puntuación: 8.2/10
+                        </div>
+                        <div style="background: #f0f0f0; padding: 15px; border-radius: 4px; border-left: 5px solid #95a5a6;">
+                            5. OnePlus 12 - Puntuación: 7.9/10
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FOOTER -->
+        <div class="mockup-section">
+            <h2 class="mockup-title">6. Footer (todas las páginas)</h2>
+            <div class="footer">
+                <h3 style="margin-bottom: 15px;">TEQLY</h3>
+                <p style="margin-bottom: 20px;">Comparador de Dispositivos Electrónicos en México</p>
+                <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 20px;">
+                    <a href="#" style="color: #ecf0f1; text-decoration: none;">Inicio</a>
+                    <a href="#" style="color: #ecf0f1; text-decoration: none;">Categorías</a>
+                    <a href="#" style="color: #ecf0f1; text-decoration: none;">Comparar</a>
+                    <a href="#" style="color: #ecf0f1; text-decoration: none;">Contacto</a>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.7;">© 2026 Teqly. Todos los derechos reservados.</p>
+            </div>
+        </div>
+        
+        <div style="margin-top: 40px; padding: 20px; background: #e8f5e9; border-left: 4px solid #27ae60; border-radius: 4px;">
+            <h3 style="color: #27ae60; margin-bottom: 10px;">✅ Mockup Completo</h3>
+            <p style="color: #2c3e50;">Este mockup muestra la estructura básica de todas las páginas principales del proyecto Teqly. Cada sección representa una vista diferente de la aplicación web.</p>
+            <br>
+            <p style="color: #7f8c8d; font-size: 0.9rem;"><strong>Nota:</strong> Este es un wireframe simplificado. La aplicación real implementada usa React con Bootstrap y tiene diseño completo tipo Versus.com con gráficos interactivos.</p>
+        </div>
+    </div>
+</body>
+</html>

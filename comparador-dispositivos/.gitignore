@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Documentación del proyecto (no subir al repo)
+PROYECTO_DOCUMENTACION.md
