@@ -51,9 +51,15 @@ function ProductList({ compararList, setCompararList }) {
 
     // Filtrar por búsqueda
     if (busqueda) {
+      // función para eliminar acentos
+      const eliminarAcentos = (texto) => {
+        return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      };
+      
+      const busquedaSinAcentos = eliminarAcentos(busqueda.toLowerCase());
       resultado = resultado.filter(p => 
-        p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-        p.marca.toLowerCase().includes(busqueda.toLowerCase())
+        eliminarAcentos(p.nombre.toLowerCase()).includes(busquedaSinAcentos) ||
+        eliminarAcentos(p.marca.toLowerCase()).includes(busquedaSinAcentos)
       );
     }
 

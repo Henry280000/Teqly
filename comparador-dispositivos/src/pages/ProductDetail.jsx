@@ -58,12 +58,17 @@ function ProductDetail() {
   const generarValoraciones = () => {
     const valoraciones = [];
     
+    // función para eliminar acentos
+    const eliminarAcentos = (texto) => {
+      return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    };
+    
     // Para diferentes categorías
     if (categoria === 'celulares' || categoria === 'tablets') {
       valoraciones.push({ nombre: 'Pantalla', valor: producto.precio > 15000 ? 8.5 : 7 });
       valoraciones.push({ nombre: 'Rendimiento', valor: producto.precio > 20000 ? 9 : producto.precio > 10000 ? 7.5 : 6 });
-      valoraciones.push({ nombre: 'Cámaras', valor: producto.caracteristicas_especiales?.some(c => c.toLowerCase().includes('cámara')) ? 8.5 : 6.5 });
-      valoraciones.push({ nombre: 'Batería', valor: producto.caracteristicas_especiales?.some(c => c.toLowerCase().includes('batería')) ? 8 : 6.5 });
+      valoraciones.push({ nombre: 'Cámaras', valor: producto.caracteristicas_especiales?.some(c => eliminarAcentos(c.toLowerCase()).includes('camara')) ? 8.5 : 6.5 });
+      valoraciones.push({ nombre: 'Batería', valor: producto.caracteristicas_especiales?.some(c => eliminarAcentos(c.toLowerCase()).includes('bateria')) ? 8 : 6.5 });
       valoraciones.push({ nombre: 'Diseño', valor: producto.precio > 18000 ? 8.5 : 7 });
     } else if (categoria === 'monitores') {
       valoraciones.push({ nombre: 'Calidad imagen', valor: producto.precio > 8000 ? 8.5 : 7 });
@@ -79,9 +84,9 @@ function ProductDetail() {
       valoraciones.push({ nombre: 'Precio', valor: 10 - (producto.precio / 1000) });
     } else if (categoria === 'audifonos') {
       valoraciones.push({ nombre: 'Calidad audio', valor: producto.precio > 3000 ? 8.5 : 7 });
-      valoraciones.push({ nombre: 'Comodidad', valor: producto.caracteristicas_especiales?.some(c => c.toLowerCase().includes('confort')) ? 8 : 7 });
-      valoraciones.push({ nombre: 'Batería', valor: producto.caracteristicas_especiales?.some(c => c.toLowerCase().includes('batería')) ? 8 : 6 });
-      valoraciones.push({ nombre: 'Conectividad', valor: producto.caracteristicas_especiales?.some(c => c.toLowerCase().includes('bluetooth')) ? 8.5 : 6 });
+      valoraciones.push({ nombre: 'Comodidad', valor: producto.caracteristicas_especiales?.some(c => eliminarAcentos(c.toLowerCase()).includes('confort')) ? 8 : 7 });
+      valoraciones.push({ nombre: 'Batería', valor: producto.caracteristicas_especiales?.some(c => eliminarAcentos(c.toLowerCase()).includes('bateria')) ? 8 : 6 });
+      valoraciones.push({ nombre: 'Conectividad', valor: producto.caracteristicas_especiales?.some(c => eliminarAcentos(c.toLowerCase()).includes('bluetooth')) ? 8.5 : 6 });
       valoraciones.push({ nombre: 'Diseño', valor: producto.precio > 4000 ? 8 : 6.5 });
     }
     

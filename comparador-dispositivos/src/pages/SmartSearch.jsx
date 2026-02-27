@@ -47,33 +47,62 @@ function SmartSearch({ compararList, setCompararList }) {
 
     // Buscar por texto en todas las propiedades incluyendo arrays
     if (filtros.busqueda && filtros.busqueda.trim() !== '') {
-      const busquedaLower = filtros.busqueda.toLowerCase().trim();
+      // función para eliminar acentos
+      const eliminarAcentos = (texto) => {
+        return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      };
+      
+      const busquedaLower = eliminarAcentos(filtros.busqueda.toLowerCase().trim());
       productos = productos.filter(p => {
         // Buscar en propiedades básicas
         const enPropiedades = 
-          p.nombre?.toLowerCase().includes(busquedaLower) ||
-          p.marca?.toLowerCase().includes(busquedaLower) ||
+          eliminarAcentos(p.nombre?.toLowerCase() || '').includes(busquedaLower) ||
+          eliminarAcentos(p.marca?.toLowerCase() || '').includes(busquedaLower) ||
           Object.values(p).some(val => 
-            typeof val === 'string' && val.toLowerCase().includes(busquedaLower)
+            typeof val === 'string' && eliminarAcentos(val.toLowerCase()).includes(busquedaLower)
           );
         
         // Buscar en características especiales
         const enCaracteristicas = p.caracteristicas_especiales?.some(
-          caract => caract.toLowerCase().includes(busquedaLower)
+          caract => eliminarAcentos(caract.toLowerCase()).includes(busquedaLower)
         );
         
         return enPropiedades || enCaracteristicas;
       });
     }
 
-    // Ordenar por mejor relación calidad-precio
+    // Ordenar por mejor relación calidad-precio y relevancia de búsqueda
     productos.sort((a, b) => {
       const numCaractA = a.caracteristicas_especiales?.length || 0;
       const numCaractB = b.caracteristicas_especiales?.length || 0;
       
-      // Evitar división por cero y dar peso al precio y características
-      const scoreA = numCaractA > 0 ? (numCaractA / (a.precio / 1000)) : 0;
-      const scoreB = numCaractB > 0 ? (numCaractB / (b.precio / 1000)) : 0;
+      // función para eliminar acentos
+      const eliminarAcentos = (texto) => {
+        return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      };
+      
+      // Score base: características por cada $1000
+      let scoreA = numCaractA > 0 ? (numCaractA / (a.precio / 1000)) : 0;
+      let scoreB = numCaractB > 0 ? (numCaractB / (b.precio / 1000)) : 0;
+      
+      // bonus por coincidencia con búsqueda
+      if (filtros.busqueda && filtros.busqueda.trim() !== '') {
+        const busquedaSinAcentos = eliminarAcentos(filtros.busqueda.toLowerCase().trim());
+        const palabrasBusqueda = busquedaSinAcentos.split(' ').filter(p => p.length > 0);
+        
+        // contar coincidencias en características de cada producto
+        const coincidenciasA = a.caracteristicas_especiales?.filter(caract => 
+          palabrasBusqueda.some(palabra => eliminarAcentos(caract.toLowerCase()).includes(palabra))
+        ).length || 0;
+        
+        const coincidenciasB = b.caracteristicas_especiales?.filter(caract => 
+          palabrasBusqueda.some(palabra => eliminarAcentos(caract.toLowerCase()).includes(palabra))
+        ).length || 0;
+        
+        // dar bonus significativo por cada coincidencia (multiplica score por 1 + coincidencias)
+        scoreA = scoreA * (1 + coincidenciasA * 2);
+        scoreB = scoreB * (1 + coincidenciasB * 2);
+      }
       
       return scoreB - scoreA;
     });
