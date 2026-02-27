@@ -268,7 +268,7 @@ function SmartSearch({ compararList, setCompararList }) {
                               className="bg-light rounded shadow-sm d-none align-items-center justify-content-center" 
                               style={{ height: '250px' }}
                             >
-                              <i className={`bi bi-${getCategoryIcon(filtros.categoria)} text-secondary`} style={{ fontSize: '4rem' }}></i>
+                              <i className={`bi bi-${getCategoryIcon(filtros.categoria)} text-secondary`} style={{ fontSize: '64px' }}></i>
                             </div>
                           </div>
                         </div>
@@ -304,10 +304,10 @@ function SmartSearch({ compararList, setCompararList }) {
                                 <div key={idx} className="col-md-6">
                                   <div className="card border bg-light">
                                     <div className="card-body py-2 px-3">
-                                      <small className="text-muted text-uppercase d-block" style={{ fontSize: '0.7rem' }}>
+                                      <small className="text-muted text-uppercase d-block" style={{ fontSize: '11px' }}>
                                         {key.replace(/_/g, ' ')}
                                       </small>
-                                      <strong className="text-dark" style={{ fontSize: '0.85rem' }}>
+                                      <strong className="text-dark" style={{ fontSize: '14px' }}>
                                         {value}
                                       </strong>
                                     </div>
@@ -326,7 +326,7 @@ function SmartSearch({ compararList, setCompararList }) {
                               </h6>
                               <div className="d-flex flex-wrap gap-2">
                                 {producto.caracteristicas_especiales.map((caract, idx) => (
-                                  <span key={idx} className="badge bg-success" style={{ fontSize: '0.8rem' }}>
+                                  <span key={idx} className="badge bg-success" style={{ fontSize: '13px' }}>
                                     <i className="bi bi-check-circle me-1"></i>
                                     {caract}
                                   </span>
@@ -552,7 +552,7 @@ function SmartSearch({ compararList, setCompararList }) {
                   <button 
                     type="submit" 
                     className="btn btn-primary btn-lg shadow-sm"
-                    style={{ fontSize: '1.1rem', padding: '1rem' }}
+                    style={{ fontSize: '18px', padding: '16px' }}
                   >
                     <i className="bi bi-stars me-2"></i>
                     Buscar las Mejores 5 Opciones

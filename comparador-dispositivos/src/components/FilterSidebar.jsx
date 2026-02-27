@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
+// componente de barra lateral para filtrar productos
 function FilterSidebar({ productos, onFilter }) {
+  // estados de los filtros
   const [precioMin, setPrecioMin] = useState('');
   const [precioMax, setPrecioMax] = useState('');
   const [marcaSeleccionada, setMarcaSeleccionada] = useState('');
   const [ordenamiento, setOrdenamiento] = useState('nombre');
   const [filtrosEspecificos, setFiltrosEspecificos] = useState({});
 
-  // Obtener marcas únicas
+  // obtiene marcas únicas
   const marcas = [...new Set(productos.map(p => p.marca))].sort();
 
-  // Obtener atributos específicos según categoría
+  // obtiene atributos específicos de la categoría para filtros dinámicos
   const getAtributosEspecificos = () => {
     if (!productos || productos.length === 0) return {};
     
@@ -32,6 +34,7 @@ function FilterSidebar({ productos, onFilter }) {
 
   const atributosEspecificos = getAtributosEspecificos();
 
+  // aplica los filtros seleccionados
   const handleFiltrar = () => {
     onFilter({
       precioMin: precioMin ? parseFloat(precioMin) : 0,
@@ -42,21 +45,23 @@ function FilterSidebar({ productos, onFilter }) {
     });
   };
 
+  // limpia todos los filtros
   const handleLimpiarFiltros = () => {
-    setPrecioMin('');
-    setPrecioMax('');
-    setMarcaSeleccionada('');
-    setOrdenamiento('nombre');
-    setFiltrosEspecificos({});
-    onFilter({
-      precioMin: 0,
-      precioMax: Infinity,
-      marca: '',
-      ordenamiento: 'nombre',
-      filtrosEspecificos: {}
+    setPrecioMin(''); // resetea precio mínimo
+    setPrecioMax(''); // resetea precio máximo
+    setMarcaSeleccionada(''); // resetea marca seleccionada
+    setOrdenamiento('nombre'); // vuelve ordenamiento por defecto a nombre
+    setFiltrosEspecificos({}); // limpia filtros específicos
+    onFilter({ // notifica al padre que no hay filtros
+      precioMin: 0, // precio mínimo en 0
+      precioMax: Infinity, // precio máximo sin límite
+      marca: '', // sin filtro de marca
+      ordenamiento: 'nombre', // ordenamiento por nombre
+      filtrosEspecificos: {} // sin filtros específicos
     });
   };
 
+  // maneja cambios en filtros específicos
   const handleFiltroEspecifico = (atributo, valor) => {
     const nuevosFiltros = { ...filtrosEspecificos };
     if (valor === '') {
@@ -69,6 +74,7 @@ function FilterSidebar({ productos, onFilter }) {
 
   return (
     <div className="card shadow-sm">
+      {/* encabezado */}
       <div className="card-header bg-primary text-white">
         <h5 className="mb-0">
           <i className="bi bi-funnel me-2"></i>
@@ -76,7 +82,7 @@ function FilterSidebar({ productos, onFilter }) {
         </h5>
       </div>
       <div className="card-body">
-        {/* Ordenamiento */}
+        {/* ordenamiento */}
         <div className="mb-4">
           <label className="form-label fw-bold">
             <i className="bi bi-sort-down me-2"></i>
@@ -94,7 +100,7 @@ function FilterSidebar({ productos, onFilter }) {
           </select>
         </div>
 
-        {/* Rango de Precio */}
+        {/* rango de precio */}
         <div className="mb-4">
           <label className="form-label fw-bold">
             <i className="bi bi-currency-dollar me-2"></i>
@@ -122,7 +128,7 @@ function FilterSidebar({ productos, onFilter }) {
           </div>
         </div>
 
-        {/* Marca */}
+        {/* filtro por marca */}
         <div className="mb-4">
           <label className="form-label fw-bold">
             <i className="bi bi-tag me-2"></i>
@@ -140,7 +146,7 @@ function FilterSidebar({ productos, onFilter }) {
           </select>
         </div>
 
-        {/* Filtros Específicos */}
+        {/* filtros específicos dinámicos */}
         {Object.keys(atributosEspecificos).length > 0 && (
           <div className="mb-4">
             <label className="form-label fw-bold">
@@ -149,7 +155,7 @@ function FilterSidebar({ productos, onFilter }) {
             </label>
             {Object.entries(atributosEspecificos).map(([atributo, valores]) => (
               <div key={atributo} className="mb-3">
-                <label className="form-label text-capitalize" style={{ fontSize: '0.9rem' }}>
+                <label className="form-label text-capitalize" style={{ fontSize: '14px' }}>
                   {atributo.replace(/_/g, ' ')}
                 </label>
                 <select
@@ -167,7 +173,7 @@ function FilterSidebar({ productos, onFilter }) {
           </div>
         )}
 
-        {/* Botones */}
+        {/* botones de acción */}
         <div className="d-grid gap-2">
           <button 
             className="btn btn-primary"
@@ -189,6 +195,7 @@ function FilterSidebar({ productos, onFilter }) {
   );
 }
 
+// validación de props
 FilterSidebar.propTypes = {
   productos: PropTypes.arrayOf(PropTypes.object).isRequired,
   onFilter: PropTypes.func.isRequired

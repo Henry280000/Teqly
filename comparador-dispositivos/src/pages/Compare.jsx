@@ -2,10 +2,12 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
+// componente de comparación de productos lado a lado
 function Compare({ compararList, setCompararList }) {
-  // Estado para rastrear errores de imagen de cada producto
+  // estado para rastrear errores de imagen de cada producto
   const [imagenesError, setImagenesError] = useState({});
 
+  // formatea el precio a moneda mexicana
   const formatPrecio = (precio) => {
     return new Intl.NumberFormat('es-MX', {
       style: 'currency',
@@ -14,20 +16,24 @@ function Compare({ compararList, setCompararList }) {
     }).format(precio);
   };
 
+  // elimina un producto de la lista de comparación
   const handleRemove = (id, categoria) => {
     setCompararList(compararList.filter(p => !(p.id === id && p.categoria === categoria)));
   };
 
+  // limpia toda la lista de comparación
   const handleClearAll = () => {
     if (window.confirm('¿Estás seguro de que quieres limpiar toda la comparación?')) {
       setCompararList([]);
     }
   };
 
+  // marca una imagen como error cuando no carga
   const handleImageError = (productoKey) => {
     setImagenesError(prev => ({ ...prev, [productoKey]: true }));
   };
 
+  // retorna el ícono según la categoría
   const getCategoryIcon = (cat) => {
     const icons = {
       celulares: 'phone',
@@ -40,7 +46,7 @@ function Compare({ compararList, setCompararList }) {
     return icons[cat] || 'device';
   };
 
-  // Calcular puntuación de un producto (0-100)
+  // calcula puntuación de un producto (0-100)
   const calcularPuntuacion = (producto) => {
     let puntos = 50; // Base
     
@@ -57,7 +63,7 @@ function Compare({ compararList, setCompararList }) {
     return Math.min(100, puntos);
   };
 
-  // Extraer métricas clave para barras de progreso
+  // extrae métricas clave para barras de progreso
   const extraerMetricas = (producto) => {
     const metricas = [];
     
@@ -79,7 +85,7 @@ function Compare({ compararList, setCompararList }) {
     return metricas;
   };
 
-  // Generar pequeño gráfico de radar para cada producto
+  // genera pequeño gráfico de radar para cada producto
   const generarMiniRadar = (producto, size = 80, center = 40) => {
     const categoria = producto.categoria;
     let valoraciones = [];
@@ -101,7 +107,7 @@ function Compare({ compararList, setCompararList }) {
         { valor: 10 - (producto.precio / 3000) }
       ];
     }
-
+// Esto igual fue con Ai para los calculos de esto
     const angle = (Math.PI * 2) / valoraciones.length;
     const points = valoraciones.map((val, index) => {
       const value = (val.valor / 10) * (size / 2);
@@ -113,12 +119,13 @@ function Compare({ compararList, setCompararList }) {
     return points.join(' ');
   };
 
+  // si no hay productos, muestra pantalla vacía
   if (compararList.length === 0) {
     return (
       <div className="container py-5">
         <div className="text-center py-5">
           <div className="mb-4">
-            <i className="bi bi-arrow-left-right text-muted" style={{ fontSize: '5rem' }}></i>
+            <i className="bi bi-arrow-left-right text-muted" style={{ fontSize: '80px' }}></i>
           </div>
           <h2 className="mb-3">Comparador de Productos</h2>
           <p className="text-muted lead mb-4" style={{ maxWidth: '600px', margin: '0 auto' }}>
@@ -140,7 +147,7 @@ function Compare({ compararList, setCompararList }) {
     );
   }
 
-  // Obtener todas las propiedades únicas
+  // obtiene todas las propiedades únicas de los productos
   const todasLasPropiedades = new Set();
   compararList.forEach(producto => {
     Object.keys(producto).forEach(key => {
@@ -152,7 +159,7 @@ function Compare({ compararList, setCompararList }) {
 
   return (
     <div className="container-fluid py-5" style={{ backgroundColor: '#f8f9fa' }}>
-      {/* Header mejorado */}
+      {/* header con título y botones */}
       <div className="container mb-4">
         <div className="row align-items-center mb-3">
           <div className="col-md-8">
@@ -185,7 +192,7 @@ function Compare({ compararList, setCompararList }) {
         )}
       </div>
 
-      {/* Comparación estilo Versus */}
+      {/* comparación estilo versus */}
       <div className="container">
         <div className="row g-4">
           {compararList.map((producto) => {
@@ -197,7 +204,7 @@ function Compare({ compararList, setCompararList }) {
             return (
               <div key={productoKey} className="col-md-6 col-lg-3">
                 <div className="card h-100 shadow-sm border-0">
-                  {/* Imagen */}
+                  {/* imagen del producto */}
                   <div className="position-relative" style={{ backgroundColor: '#f8f9fa' }}>
                     {producto.imagen && !imagenError ? (
                       <img
@@ -217,7 +224,7 @@ function Compare({ compararList, setCompararList }) {
                         className="bg-light d-flex align-items-center justify-content-center"
                         style={{ height: '200px' }}
                       >
-                        <i className={`bi bi-${getCategoryIcon(producto.categoria)} text-secondary`} style={{ fontSize: '4rem' }}></i>
+                        <i className={`bi bi-${getCategoryIcon(producto.categoria)} text-secondary`} style={{ fontSize: '64px' }}></i>
                       </div>
                     )}
                     <button
@@ -232,18 +239,18 @@ function Compare({ compararList, setCompararList }) {
                     </span>
                   </div>
 
-                  {/* Info principal */}
+                  {/* información principal del producto */}
                   <div className="card-body">
-                    <h5 className="card-title mb-2" style={{ fontSize: '1rem', minHeight: '2.5rem' }}>
+                    <h5 className="card-title mb-2" style={{ fontSize: '16px', minHeight: '40px' }}>
                       {producto.nombre}
                     </h5>
-                    <p className="text-muted mb-1" style={{ fontSize: '0.9rem' }}>
+                    <p className="text-muted mb-1" style={{ fontSize: '14px' }}>
                       <i className="bi bi-tag me-1"></i>
                       {producto.marca}
                     </p>
                     <h4 className="text-primary mb-3">{formatPrecio(producto.precio)}</h4>
 
-                    {/* Puntuación estilo Versus */}
+                    {/* puntuación estilo versus con círculo */}
                     <div className="text-center mb-3 p-3 bg-light rounded">
                       <div className="d-flex align-items-center justify-content-center mb-2">
                         <div 
@@ -251,10 +258,10 @@ function Compare({ compararList, setCompararList }) {
                           style={{ width: '80px', height: '80px' }}
                         >
                           <div className="text-white">
-                            <div style={{ fontSize: '1.8rem', fontWeight: 'bold', lineHeight: '1' }}>
+                            <div style={{ fontSize: '29px', fontWeight: 'bold', lineHeight: '1' }}>
                               {puntuacion}
                             </div>
-                            <div style={{ fontSize: '0.7rem', opacity: 0.9 }}>
+                            <div style={{ fontSize: '11px', opacity: 0.9 }}>
                               PUNTOS
                             </div>
                           </div>
@@ -263,7 +270,7 @@ function Compare({ compararList, setCompararList }) {
                       <small className="text-muted">Puntuación general</small>
                     </div>
 
-                    {/* Mini gráfico de radar */}
+                    {/* Mini gráfico de radar con ayuda de Ai porque no supe hacerlo yo y que quedara decente la verdad que inicia desde aqui*/}
                     <div className="text-center mb-3 p-2 bg-white border rounded">
                       <svg width="100%" height="90" viewBox="0 0 80 80" className="mx-auto d-block">
                         {/* Círculos de fondo */}
@@ -297,19 +304,19 @@ function Compare({ compararList, setCompararList }) {
                           strokeWidth="1.5"
                         />
                       </svg>
-                      <small className="text-muted" style={{ fontSize: '0.65rem' }}>Análisis visual</small>
+                      <small className="text-muted" style={{ fontSize: '10px' }}>Análisis visual</small>
                     </div>
 
-                    {/* Métricas con barras de progreso */}
+                    {/* métricas con barras de progreso */}
                     <div className="mb-3">
-                      <h6 className="text-uppercase text-muted mb-3" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
+                      <h6 className="text-uppercase text-muted mb-3" style={{ fontSize: '12px', fontWeight: 'bold' }}>
                         Valoraciones clave
                       </h6>
                       {metricas.map((metrica, idx) => (
                         <div key={idx} className="mb-3">
                           <div className="d-flex justify-content-between mb-1">
-                            <small style={{ fontSize: '0.75rem' }}>{metrica.nombre}</small>
-                            <small className="fw-bold" style={{ fontSize: '0.75rem' }}>
+                            <small style={{ fontSize: '12px' }}>{metrica.nombre}</small>
+                            <small className="fw-bold" style={{ fontSize: '12px' }}>
                               {metrica.valor.toFixed(1)}/10
                             </small>
                           </div>
@@ -326,9 +333,9 @@ function Compare({ compararList, setCompararList }) {
                       ))}
                     </div>
 
-                    {/* Especificaciones clave */}
+                    {/* Especificaciones clave hasta aqui llego a ayuda de la Ai*/}
                     <div className="mb-3">
-                      <h6 className="text-uppercase text-muted mb-2" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
+                      <h6 className="text-uppercase text-muted mb-2" style={{ fontSize: '12px', fontWeight: 'bold' }}>
                         Especificaciones
                       </h6>
                       {Array.from(todasLasPropiedades).slice(0, 4).map((propiedad, idx) => {
@@ -336,10 +343,10 @@ function Compare({ compararList, setCompararList }) {
                         if (valor && propiedad !== 'nombre' && propiedad !== 'marca' && propiedad !== 'precio') {
                           return (
                             <div key={idx} className="mb-2 pb-2 border-bottom">
-                              <small className="text-muted d-block" style={{ fontSize: '0.7rem' }}>
+                              <small className="text-muted d-block" style={{ fontSize: '11px' }}>
                                 {propiedad.replace(/_/g, ' ')}
                               </small>
-                              <div className="text-dark" style={{ fontSize: '0.85rem', fontWeight: '500' }}>
+                              <div className="text-dark" style={{ fontSize: '14px', fontWeight: '500' }}>
                                 {valor}
                               </div>
                             </div>
@@ -349,23 +356,23 @@ function Compare({ compararList, setCompararList }) {
                       })}
                     </div>
 
-                    {/* Características destacadas */}
+                    {/* características destacadas */}
                     {producto.caracteristicas_especiales && producto.caracteristicas_especiales.length > 0 && (
                       <div className="mb-3">
-                        <h6 className="text-uppercase text-muted mb-2" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
+                        <h6 className="text-uppercase text-muted mb-2" style={{ fontSize: '12px', fontWeight: 'bold' }}>
                           <i className="bi bi-check-circle-fill text-success me-1"></i>
                           Destacados
                         </h6>
                         {producto.caracteristicas_especiales.slice(0, 3).map((caract, idx) => (
                           <div key={idx} className="mb-1">
-                            <small className="text-success" style={{ fontSize: '0.75rem' }}>
+                            <small className="text-success" style={{ fontSize: '12px' }}>
                               <i className="bi bi-check-circle me-1"></i>
                               {caract}
                             </small>
                           </div>
                         ))}
                         {producto.caracteristicas_especiales.length > 3 && (
-                          <small className="text-muted" style={{ fontSize: '0.7rem' }}>
+                          <small className="text-muted" style={{ fontSize: '11px' }}>
                             +{producto.caracteristicas_especiales.length - 3} más
                           </small>
                         )}
@@ -373,7 +380,7 @@ function Compare({ compararList, setCompararList }) {
                     )}
                   </div>
 
-                  {/* Footer */}
+                  {/* botón para ver detalles */}
                   <div className="card-footer bg-white border-top">
                     <Link
                       to={`/producto/${producto.categoria}/${producto.id}`}
@@ -388,12 +395,12 @@ function Compare({ compararList, setCompararList }) {
             );
           })}
 
-          {/* Espacios vacíos para completar 4 columnas */}
+          {/* espacios vacíos para completar hasta 4 productos */}
           {[...Array(4 - compararList.length)].map((_, index) => (
             <div key={`empty-${index}`} className="col-md-6 col-lg-3">
               <div className="card h-100 border-dashed" style={{ borderStyle: 'dashed', minHeight: '400px' }}>
                 <div className="card-body d-flex flex-column align-items-center justify-content-center text-center p-4">
-                  <i className="bi bi-plus-circle text-muted mb-3" style={{ fontSize: '3rem' }}></i>
+                  <i className="bi bi-plus-circle text-muted mb-3" style={{ fontSize: '48px' }}></i>
                   <h5 className="text-muted">Agregar producto</h5>
                   <p className="text-muted small mb-3">
                     Navega por las categorías y haz clic en &quot;Agregar a comparar&quot;
@@ -409,7 +416,7 @@ function Compare({ compararList, setCompararList }) {
         </div>
       </div>
 
-      {/* Información adicional */}
+      {/* información adicional y consejos */}
       <div className="container mt-4">
         <div className="row g-3">
           <div className="col-md-8">
@@ -418,7 +425,7 @@ function Compare({ compararList, setCompararList }) {
                 <i className="bi bi-lightbulb text-warning me-2"></i>
                 <strong>Cómo usar la comparación:</strong>
               </h6>
-              <ul className="mb-0 ps-4" style={{ fontSize: '0.9rem' }}>
+              <ul className="mb-0 ps-4" style={{ fontSize: '14px' }}>
                 <li><strong>Puntuación:</strong> Valoración general basada en características y precio</li>
                 <li><strong>Valoraciones:</strong> Métricas específicas de cada producto</li>
                 <li><strong>Especificaciones:</strong> Datos técnicos detallados</li>
@@ -432,7 +439,7 @@ function Compare({ compararList, setCompararList }) {
                 <i className="bi bi-info-circle me-2"></i>
                 <strong>Consejo:</strong>
               </h6>
-              <p className="mb-0" style={{ fontSize: '0.9rem' }}>
+              <p className="mb-0" style={{ fontSize: '14px' }}>
                 Puedes comparar hasta <strong>4 productos</strong> simultáneamente. 
                 Haz clic en el botón <strong>X</strong> para eliminar productos individuales.
               </p>
@@ -444,6 +451,7 @@ function Compare({ compararList, setCompararList }) {
   );
 }
 
+// validación de props
 Compare.propTypes = {
   compararList: PropTypes.arrayOf(PropTypes.object).isRequired,
   setCompararList: PropTypes.func.isRequired

@@ -21,8 +21,8 @@ function Home() {
             <Link to="/categoria/celulares" className="text-decoration-none">
               <button className="btn btn-outline-secondary rounded-4 px-4 py-3" style={{ minWidth: '140px' }}>
                 <div className="d-flex flex-column align-items-center">
-                  <i className="bi bi-phone" style={{ fontSize: '2rem' }}></i>
-                  <span className="mt-2 fw-semibold" style={{ fontSize: '0.9rem' }}>Smartphones</span>
+                  <i className="bi bi-phone" style={{ fontSize: '32px' }}></i>
+                  <span className="mt-2 fw-semibold" style={{ fontSize: '14px' }}>Smartphones</span>
                 </div>
               </button>
             </Link>
@@ -31,8 +31,8 @@ function Home() {
             <Link to="/categoria/tablets" className="text-decoration-none">
               <button className="btn btn-outline-secondary rounded-4 px-4 py-3" style={{ minWidth: '140px' }}>
                 <div className="d-flex flex-column align-items-center">
-                  <i className="bi bi-tablet" style={{ fontSize: '2rem' }}></i>
-                  <span className="mt-2 fw-semibold" style={{ fontSize: '0.9rem' }}>Tablets</span>
+                  <i className="bi bi-tablet" style={{ fontSize: '32px' }}></i>
+                  <span className="mt-2 fw-semibold" style={{ fontSize: '14px' }}>Tablets</span>
                 </div>
               </button>
             </Link>
@@ -41,8 +41,8 @@ function Home() {
             <Link to="/categoria/monitores" className="text-decoration-none">
               <button className="btn btn-outline-secondary rounded-4 px-4 py-3" style={{ minWidth: '140px' }}>
                 <div className="d-flex flex-column align-items-center">
-                  <i className="bi bi-display" style={{ fontSize: '2rem' }}></i>
-                  <span className="mt-2 fw-semibold" style={{ fontSize: '0.9rem' }}>Monitores</span>
+                  <i className="bi bi-display" style={{ fontSize: '32px' }}></i>
+                  <span className="mt-2 fw-semibold" style={{ fontSize: '14px' }}>Monitores</span>
                 </div>
               </button>
             </Link>
@@ -51,8 +51,8 @@ function Home() {
             <Link to="/categoria/teclados" className="text-decoration-none">
               <button className="btn btn-outline-secondary rounded-4 px-4 py-3" style={{ minWidth: '140px' }}>
                 <div className="d-flex flex-column align-items-center">
-                  <i className="bi bi-keyboard" style={{ fontSize: '2rem' }}></i>
-                  <span className="mt-2 fw-semibold" style={{ fontSize: '0.9rem' }}>Teclados</span>
+                  <i className="bi bi-keyboard" style={{ fontSize: '32px' }}></i>
+                  <span className="mt-2 fw-semibold" style={{ fontSize: '14px' }}>Teclados</span>
                 </div>
               </button>
             </Link>
@@ -61,8 +61,8 @@ function Home() {
             <Link to="/categoria/ratones" className="text-decoration-none">
               <button className="btn btn-outline-secondary rounded-4 px-4 py-3" style={{ minWidth: '140px' }}>
                 <div className="d-flex flex-column align-items-center">
-                  <i className="bi bi-mouse" style={{ fontSize: '2rem' }}></i>
-                  <span className="mt-2 fw-semibold" style={{ fontSize: '0.9rem' }}>Ratones</span>
+                  <i className="bi bi-mouse" style={{ fontSize: '32px' }}></i>
+                  <span className="mt-2 fw-semibold" style={{ fontSize: '14px' }}>Ratones</span>
                 </div>
               </button>
             </Link>
@@ -71,8 +71,8 @@ function Home() {
             <Link to="/categoria/audifonos" className="text-decoration-none">
               <button className="btn btn-outline-secondary rounded-4 px-4 py-3" style={{ minWidth: '140px' }}>
                 <div className="d-flex flex-column align-items-center">
-                  <i className="bi bi-headphones" style={{ fontSize: '2rem' }}></i>
-                  <span className="mt-2 fw-semibold" style={{ fontSize: '0.9rem' }}>Audífonos</span>
+                  <i className="bi bi-headphones" style={{ fontSize: '32px' }}></i>
+                  <span className="mt-2 fw-semibold" style={{ fontSize: '14px' }}>Audífonos</span>
                 </div>
               </button>
             </Link>
@@ -85,7 +85,7 @@ function Home() {
         <div className="col-md-4 mb-3">
           <div className="card h-100 border-primary">
             <div className="card-body text-center">
-              <i className="bi bi-funnel text-primary" style={{ fontSize: '3rem' }}></i>
+              <i className="bi bi-funnel text-primary" style={{ fontSize: '48px' }}></i>
               <h5 className="card-title mt-3">Filtros Avanzados</h5>
               <p className="card-text text-muted">
                 Filtra por precio, marca y características específicas
@@ -96,7 +96,7 @@ function Home() {
         <div className="col-md-4 mb-3">
           <div className="card h-100 border-success">
             <div className="card-body text-center">
-              <i className="bi bi-stars text-success" style={{ fontSize: '3rem' }}></i>
+              <i className="bi bi-stars text-success" style={{ fontSize: '48px' }}></i>
               <h5 className="card-title mt-3">Búsqueda Inteligente</h5>
               <p className="card-text text-muted">
                 Encuentra el dispositivo perfecto con preguntas personalizadas
@@ -107,7 +107,7 @@ function Home() {
         <div className="col-md-4 mb-3">
           <div className="card h-100 border-info">
             <div className="card-body text-center">
-              <i className="bi bi-arrows-angle-expand text-info" style={{ fontSize: '3rem' }}></i>
+              <i className="bi bi-arrows-angle-expand text-info" style={{ fontSize: '48px' }}></i>
               <h5 className="card-title mt-3">Comparación Múltiple</h5>
               <p className="card-text text-muted">
                 Compara hasta 4 dispositivos lado a lado

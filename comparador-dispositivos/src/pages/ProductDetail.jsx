@@ -138,7 +138,7 @@ function ProductDetail() {
   const comparaciones = generarComparaciones();
   const promedioValoraciones = (valoraciones.reduce((sum, v) => sum + v.valor, 0) / valoraciones.length).toFixed(1);
 
-  // Generar puntos del polígono para el gráfico radar
+  // Generar puntos del polígono para el gráfico radar que se repite en la comparación
   const generarPuntosRadar = (valores, size = 200, center = 100) => {
     const angle = (Math.PI * 2) / valores.length;
     const points = valores.map((valor, index) => {
@@ -247,7 +247,7 @@ function ProductDetail() {
                 />
               ) : (
                 <div className="bg-light rounded d-flex align-items-center justify-content-center" style={{ height: '350px' }}>
-                  <i className={`bi bi-${getCategoryIcon(categoria)} text-secondary`} style={{ fontSize: '6rem' }}></i>
+                  <i className={`bi bi-${getCategoryIcon(categoria)} text-secondary`} style={{ fontSize: '96px' }}></i>
                 </div>
               )}
             </div>
@@ -256,7 +256,7 @@ function ProductDetail() {
           {/* Puntuación circular */}
           <div className="card shadow-sm">
             <div className="card-body text-center">
-              <h6 className="text-muted text-uppercase mb-3" style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>
+              <h6 className="text-muted text-uppercase mb-3" style={{ fontSize: '14px', fontWeight: 'bold' }}>
                 Puntuación General
               </h6>
               <div 
@@ -264,15 +264,15 @@ function ProductDetail() {
                 style={{ width: '140px', height: '140px' }}
               >
                 <div className="text-white">
-                  <div style={{ fontSize: '3rem', fontWeight: 'bold', lineHeight: '1' }}>
+                  <div style={{ fontSize: '48px', fontWeight: 'bold', lineHeight: '1' }}>
                     {puntuacion}
                   </div>
-                  <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>
+                  <div style={{ fontSize: '14px', opacity: 0.9 }}>
                     PUNTOS
                   </div>
                 </div>
               </div>
-              <p className="text-muted mb-0" style={{ fontSize: '0.85rem' }}>
+              <p className="text-muted mb-0" style={{ fontSize: '14px' }}>
                 Basado en especificaciones,<br />características y precio
               </p>
             </div>
@@ -363,7 +363,7 @@ function ProductDetail() {
                       </svg>
                     </div>
                     <div className="col-md-6">
-                      <h6 className="text-muted text-uppercase mb-3" style={{ fontSize: '0.8rem' }}>
+                      <h6 className="text-muted text-uppercase mb-3" style={{ fontSize: '13px' }}>
                         Valoraciones detalladas
                       </h6>
                       {valoraciones.map((val, idx) => (
@@ -402,7 +402,7 @@ function ProductDetail() {
                       {comparaciones.map((comp, idx) => (
                         <div key={idx} className="col-md-6">
                           <div className="d-flex align-items-start">
-                            <i className="bi bi-check-circle-fill text-success me-2 mt-1" style={{ fontSize: '1.2rem' }}></i>
+                            <i className="bi bi-check-circle-fill text-success me-2 mt-1" style={{ fontSize: '19px' }}></i>
                             <div>
                               <div className="fw-bold mb-1">{comp.texto}</div>
                               {comp.detalle && (
@@ -438,10 +438,10 @@ function ProductDetail() {
                         style={{ width: '100px', height: '100px' }}
                       >
                         <div className="text-white">
-                          <div style={{ fontSize: '2.2rem', fontWeight: 'bold', lineHeight: '1' }}>
+                          <div style={{ fontSize: '35px', fontWeight: 'bold', lineHeight: '1' }}>
                             {promedioValoraciones}
                           </div>
-                          <div style={{ fontSize: '0.8rem', opacity: 0.9 }}>
+                          <div style={{ fontSize: '13px', opacity: 0.9 }}>
                             / 10
                           </div>
                         </div>
@@ -517,7 +517,7 @@ function ProductDetail() {
                         <div key={index} className="col-md-6">
                           <div className="card border-primary bg-light h-100">
                             <div className="card-body py-3">
-                              <div className="text-primary text-uppercase fw-bold mb-1" style={{ fontSize: '0.7rem' }}>
+                              <div className="text-primary text-uppercase fw-bold mb-1" style={{ fontSize: '11px' }}>
                                 {key.replace(/_/g, ' ')}
                               </div>
                               <div className="text-dark fw-bold">
