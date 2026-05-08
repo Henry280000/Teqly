@@ -1,0 +1,138 @@
+/* Modo oscuro (Quantum Pulse)
+   Solo colores, fondos, bordes, sombras. Sin tamaños ni tipografía. */
+
+/* --- Variables --- */
+[data-theme="dark"] {
+  --tq-bg-base: #020617;
+  --tq-bg-card: #0f172a;
+  --tq-bg-input: #020617;
+  --tq-border-subtle: rgba(99, 102, 241, 0.08);
+  --tq-border-accent: rgba(99, 102, 241, 0.12);
+  --tq-border-input: #1e293b;
+  --tq-border-strong: rgba(99, 102, 241, 0.25);
+  --tq-text-primary: #ffffff;
+  --tq-text-secondary: #94a3b8;
+  --tq-text-muted: #64748b;
+  --tq-text-dim: #475569;
+  --tq-text-faint: #334155;
+  --tq-gradient-indigo: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%);
+  --tq-gradient-brand: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%);
+  --tq-gradient-dark: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+  --tq-gradient-hero: linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
+  --tq-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --tq-shadow-hover: 0 20px 50px rgba(99, 102, 241, 0.15), 0 8px 24px rgba(0, 0, 0, 0.4);
+  --tq-shadow-modal: 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+
+/* --- Tarjetas glassmorphism --- */
+[data-theme="dark"] .tq-card,
+[data-theme="dark"] .tq-card--auth {
+  background: rgba(15, 23, 42, 0.6) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(99, 102, 241, 0.1) !important;
+}
+
+[data-theme="dark"] .tq-card--hover:hover {
+  border-color: rgba(99, 102, 241, 0.3) !important;
+  box-shadow: var(--tq-shadow-hover), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* --- Navbar glass --- */
+[data-theme="dark"] .tq-navbar {
+  background: rgba(2, 6, 23, 0.8) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.08) !important;
+}
+
+/* --- Footer --- */
+[data-theme="dark"] .tq-footer {
+  background: rgba(2, 6, 23, 0.9) !important;
+  border-top: 1px solid rgba(99, 102, 241, 0.06) !important;
+}
+
+/* --- Botones con brillo --- */
+[data-theme="dark"] .tq-btn-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%) !important;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+[data-theme="dark"] .tq-btn-primary:hover {
+  box-shadow: 0 6px 25px rgba(99, 102, 241, 0.5) !important;
+}
+
+/* --- Círculo de puntuación --- */
+[data-theme="dark"] .tq-score-circle {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%) !important;
+  box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+}
+
+/* --- Insignias --- */
+[data-theme="dark"] .tq-badge-count {
+  background: linear-gradient(135deg, #6366f1, #a855f7, #06b6d4) !important;
+}
+
+/* --- Inputs --- */
+[data-theme="dark"] .tq-input:focus,
+[data-theme="dark"] .tq-select:focus {
+  border-color: transparent !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4), 0 0 20px rgba(99, 102, 241, 0.1) !important;
+}
+
+/* --- Dropdown --- */
+[data-theme="dark"] .tq-dropdown-menu {
+  background: #0f172a !important;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(99, 102, 241, 0.15) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* --- Imágenes de producto --- */
+[data-theme="dark"] .tq-product-img,
+[data-theme="dark"] .tq-product-img-placeholder {
+  background: var(--tq-bg-base) !important;
+}
+
+/* --- Override de Bootstrap .card --- */
+[data-theme="dark"] .card {
+  background: var(--tq-bg-card) !important;
+  border-color: var(--tq-border-subtle) !important;
+}
+
+[data-theme="dark"] .card h5,
+[data-theme="dark"] .card h6 {
+  color: var(--tq-text-primary) !important;
+}
+
+[data-theme="dark"] .card p {
+  color: var(--tq-text-secondary) !important;
+}
+
+/* --- Tarjetas de categoría --- */
+[data-theme="dark"] .tq-cat-card {
+  background: var(--tq-bg-card) !important;
+}
+
+[data-theme="dark"] .tq-cat-card h6 {
+  color: var(--tq-text-primary) !important;
+}
+
+[data-theme="dark"] .tq-cat-card small {
+  color: var(--tq-text-muted) !important;
+}
+
+/* --- Scrollbar --- */
+[data-theme="dark"] ::-webkit-scrollbar-track { background: #020617; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #1e293b; }
+
+/* --- Selección de texto --- */
+[data-theme="dark"] ::selection { background: rgba(168, 85, 247, 0.3); }
+
+/* --- Transiciones --- */
+[data-theme="dark"] a,
+[data-theme="dark"] button,
+[data-theme="dark"] .card,
+[data-theme="dark"] .btn {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}

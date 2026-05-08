@@ -1,612 +1,372 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import dispositivosData from '../data/dispositivos.json';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { agregarAComparar } from '../Store/Slices/compararSlice';
+import { agregarFavorito, quitarFavorito } from '../Store/Slices/favoritosSlice';
+import { toast } from 'react-toastify';
+import api from '../Services/api';
 
-function SmartSearch({ compararList, setCompararList }) {
-  const [filtros, setFiltros] = useState({
-    categoria: '',
-    presupuestoMin: '',
-    presupuestoMax: '',
-    marca: '',
-    busqueda: '',
-    caracteristicasDeseadas: []
-  });
+function SmartSearch() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { lista: comparar } = useSelector((s) => s.comparar);
+  const { lista: favoritos } = useSelector((s) => s.favoritos);
+  const { usuario } = useSelector((s) => s.auth);
+
+  const [filtros, setFiltros] = useState({ categoria: '', presupuestoMin: '', presupuestoMax: '', marca: '', busqueda: '' });
+  const [marcasDisponibles, setMarcasDisponibles] = useState([]);
   const [resultados, setResultados] = useState([]);
   const [mostrarResultados, setMostrarResultados] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [imgErrors, setImgErrors] = useState({});
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFiltros({ ...filtros, [name]: value });
-  };
+  useEffect(() => {
+    if (filtros.categoria) api.get(`/smart/marcas/${filtros.categoria}`).then(r => setMarcasDisponibles(r.data.data)).catch(() => setMarcasDisponibles([]));
+    else setMarcasDisponibles([]);
+  }, [filtros.categoria]);
 
-  const buscarProductos = (e) => {
+  const handleChange = (e) => setFiltros(p => ({ ...p, [e.target.name]: e.target.value }));
+
+  const buscar = async (e) => {
     e.preventDefault();
-    
-    if (!filtros.categoria) {
-      alert('Por favor selecciona una categoría');
-      return;
-    }
-
-    let productos = [...(dispositivosData[filtros.categoria] || [])];
-
-    // Filtrar por presupuesto
-    if (filtros.presupuestoMin && filtros.presupuestoMin !== '') {
-      const min = parseFloat(filtros.presupuestoMin);
-      productos = productos.filter(p => p.precio >= min);
-    }
-    if (filtros.presupuestoMax && filtros.presupuestoMax !== '') {
-      const max = parseFloat(filtros.presupuestoMax);
-      productos = productos.filter(p => p.precio <= max);
-    }
-
-    // Filtrar por marca
-    if (filtros.marca && filtros.marca !== '') {
-      productos = productos.filter(p => p.marca === filtros.marca);
-    }
-
-    // Buscar por texto en todas las propiedades incluyendo arrays
-    if (filtros.busqueda && filtros.busqueda.trim() !== '') {
-      // función para eliminar acentos
-      const eliminarAcentos = (texto) => {
-        return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      };
-      
-      const busquedaLower = eliminarAcentos(filtros.busqueda.toLowerCase().trim());
-      productos = productos.filter(p => {
-        // Buscar en propiedades básicas
-        const enPropiedades = 
-          eliminarAcentos(p.nombre?.toLowerCase() || '').includes(busquedaLower) ||
-          eliminarAcentos(p.marca?.toLowerCase() || '').includes(busquedaLower) ||
-          Object.values(p).some(val => 
-            typeof val === 'string' && eliminarAcentos(val.toLowerCase()).includes(busquedaLower)
-          );
-        
-        // Buscar en características especiales
-        const enCaracteristicas = p.caracteristicas_especiales?.some(
-          caract => eliminarAcentos(caract.toLowerCase()).includes(busquedaLower)
-        );
-        
-        return enPropiedades || enCaracteristicas;
-      });
-    }
-
-    // Ordenar por mejor relación calidad-precio y relevancia de búsqueda
-    productos.sort((a, b) => {
-      const numCaractA = a.caracteristicas_especiales?.length || 0;
-      const numCaractB = b.caracteristicas_especiales?.length || 0;
-      
-      // función para eliminar acentos
-      const eliminarAcentos = (texto) => {
-        return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      };
-      
-      // Score base: características por cada $1000
-      let scoreA = numCaractA > 0 ? (numCaractA / (a.precio / 1000)) : 0;
-      let scoreB = numCaractB > 0 ? (numCaractB / (b.precio / 1000)) : 0;
-      
-      // bonus por coincidencia con búsqueda
-      if (filtros.busqueda && filtros.busqueda.trim() !== '') {
-        const busquedaSinAcentos = eliminarAcentos(filtros.busqueda.toLowerCase().trim());
-        const palabrasBusqueda = busquedaSinAcentos.split(' ').filter(p => p.length > 0);
-        
-        // contar coincidencias en características de cada producto
-        const coincidenciasA = a.caracteristicas_especiales?.filter(caract => 
-          palabrasBusqueda.some(palabra => eliminarAcentos(caract.toLowerCase()).includes(palabra))
-        ).length || 0;
-        
-        const coincidenciasB = b.caracteristicas_especiales?.filter(caract => 
-          palabrasBusqueda.some(palabra => eliminarAcentos(caract.toLowerCase()).includes(palabra))
-        ).length || 0;
-        
-        // dar bonus significativo por cada coincidencia (multiplica score por 1 + coincidencias)
-        scoreA = scoreA * (1 + coincidenciasA * 2);
-        scoreB = scoreB * (1 + coincidenciasB * 2);
-      }
-      
-      return scoreB - scoreA;
-    });
-
-    // Mostrar solo las mejores 5 opciones
-    const top5 = productos.slice(0, 5);
-    console.log('Resultados de búsqueda:', top5); // Para debugging
-    setResultados(top5);
-    setMostrarResultados(true);
+    if (!filtros.categoria) { toast.warning('Selecciona una categoría'); return; }
+    setLoading(true);
+    setImgErrors({});
+    try {
+      const params = new URLSearchParams();
+      params.append('categoria', filtros.categoria);
+      if (filtros.presupuestoMin) params.append('presupuestoMin', filtros.presupuestoMin);
+      if (filtros.presupuestoMax) params.append('presupuestoMax', filtros.presupuestoMax);
+      if (filtros.marca) params.append('marca', filtros.marca);
+      if (filtros.busqueda) params.append('busqueda', filtros.busqueda);
+      const res = await api.get(`/smart/buscar?${params.toString()}`);
+      setResultados(res.data.data);
+      setMostrarResultados(true);
+    } catch (err) { toast.error(err.response?.data?.mensaje || 'Error al buscar'); }
+    finally { setLoading(false); }
   };
 
-  const handleReset = () => {
-    setFiltros({
-      categoria: '',
-      presupuestoMin: '',
-      presupuestoMax: '',
-      marca: '',
-      busqueda: '',
-      caracteristicasDeseadas: []
-    });
-    setResultados([]);
-    setMostrarResultados(false);
+  const handleReset = () => { setFiltros({ categoria: '', presupuestoMin: '', presupuestoMax: '', marca: '', busqueda: '' }); setResultados([]); setMostrarResultados(false); setMarcasDisponibles([]); setImgErrors({}); };
+
+  const handleAgregarComparar = (producto) => {
+    if (comparar.length >= 4) { toast.warning('Máximo 4 productos'); return; }
+    if (comparar.find(p => p._id === producto._id && p.categoria === filtros.categoria)) { toast.info('Ya está en comparación'); return; }
+    dispatch(agregarAComparar({ ...producto, categoria: filtros.categoria }));
+    toast.success('Agregado a comparación');
   };
 
-  const handleAddToCompare = (producto, categoria) => {
-    if (compararList.length >= 4) {
-      alert('Solo puedes comparar hasta 4 productos a la vez');
-      return;
-    }
-    
-    const existe = compararList.find(p => p.id === producto.id && p.categoria === categoria);
-    if (existe) {
-      alert('Este producto ya está en la lista de comparación');
-      return;
-    }
-
-    setCompararList([...compararList, { ...producto, categoria }]);
-    alert('Producto agregado a comparación');
+  const handleToggleFavorito = (producto) => {
+    if (!usuario) { toast.warning('Inicia sesión para guardar favoritos'); navigate('/login'); return; }
+    const esFav = favoritos.find(p => p._id === producto._id);
+    if (esFav) { dispatch(quitarFavorito(producto._id)); toast.info('Eliminado de favoritos'); }
+    else { dispatch(agregarFavorito({ ...producto, categoria: filtros.categoria })); toast.success('Agregado a favoritos'); }
   };
 
-  const getCategoryIcon = (cat) => {
-    const icons = {
-      celulares: 'phone',
-      tablets: 'tablet',
-      monitores: 'display',
-      teclados: 'keyboard',
-      ratones: 'mouse',
-      audifonos: 'headphones'
-    };
-    return icons[cat] || 'device';
-  };
+  const getCategoryIcon = (c) => ({ celulares: 'phone', tablets: 'tablet', monitores: 'display', teclados: 'keyboard', ratones: 'mouse', audifonos: 'headphones' }[c] || 'device');
+  const formatPrecio = (p) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 0 }).format(p);
 
-  const getMarcasDisponibles = () => {
-    if (!filtros.categoria) return [];
-    const productos = dispositivosData[filtros.categoria] || [];
-    return [...new Set(productos.map(p => p.marca))].sort();
-  };
+  const categoriasInfo = [
+    { value: 'celulares', icon: 'phone', label: 'Celulares' },
+    { value: 'tablets', icon: 'tablet', label: 'Tablets' },
+    { value: 'monitores', icon: 'display', label: 'Monitores' },
+    { value: 'teclados', icon: 'keyboard', label: 'Teclados' },
+    { value: 'ratones', icon: 'mouse', label: 'Ratones' },
+    { value: 'audifonos', icon: 'headphones', label: 'Audífonos' },
+  ];
 
+  const rankMedals = ['bi-trophy-fill', 'bi-award-fill', 'bi-gem', 'bi-star-fill', 'bi-star-fill'];
+  const rankLabels = ['Mejor opción', '2do lugar', '3er lugar', '4to lugar', '5to lugar'];
+  const rankAccents = ['#f59e0b', '#94a3b8', '#cd7f32', '#6366f1', '#6366f1'];
 
+  // ---- Vista de resultados ----
   if (mostrarResultados) {
     return (
-      <div className="container py-5">
-        <div className="card shadow-lg mb-4 border-primary">
-          <div className="card-header bg-primary text-white">
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
-                <h3 className="mb-1">
-                  <i className="bi bi-stars me-2"></i>
-                  Las 5 Mejores Opciones para Ti
-                </h3>
-                <small>En {filtros.categoria}</small>
-              </div>
-              <button className="btn btn-light" onClick={handleReset}>
-                <i className="bi bi-arrow-left me-2"></i>
-                Nueva búsqueda
-              </button>
-            </div>
-          </div>
-          <div className="card-body">
-            <div className="mb-3">
-              <h6 className="text-muted mb-2">
-                <i className="bi bi-funnel me-2"></i>
-                Filtros aplicados:
-              </h6>
-              <div className="d-flex flex-wrap gap-2">
-                <span className="badge bg-primary">
-                  Categoría: {filtros.categoria}
-                </span>
-                {filtros.presupuestoMin && (
-                  <span className="badge bg-info">
-                    Precio mín: ${parseInt(filtros.presupuestoMin).toLocaleString()}
-                  </span>
-                )}
-                {filtros.presupuestoMax && (
-                  <span className="badge bg-info">
-                    Precio máx: ${parseInt(filtros.presupuestoMax).toLocaleString()}
-                  </span>
-                )}
-                {filtros.marca && (
-                  <span className="badge bg-secondary">
-                    Marca: {filtros.marca}
-                  </span>
-                )}
-                {filtros.busqueda && (
-                  <span className="badge bg-warning text-dark">
-                    Búsqueda: &quot;{filtros.busqueda}&quot;
-                  </span>
-                )}
+      <div className="tq-page">
+        <div className="container py-5">
+          {/* Encabezado */}
+          <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <div>
+              <h2 className="fw-bold mb-1 tq-text-primary">
+                <i className="bi bi-stars me-2 tq-text-indigo"></i>Top {resultados.length} Recomendaciones
+              </h2>
+              <div className="d-flex flex-wrap gap-2 mt-2">
+                <span className="badge tq-badge-indigo">{filtros.categoria}</span>
+                {filtros.presupuestoMin && <span className="badge tq-badge-cyan">Desde {formatPrecio(filtros.presupuestoMin)}</span>}
+                {filtros.presupuestoMax && <span className="badge tq-badge-cyan">Hasta {formatPrecio(filtros.presupuestoMax)}</span>}
+                {filtros.marca && <span className="badge tq-badge-indigo">{filtros.marca}</span>}
+                {filtros.busqueda && <span className="badge tq-badge-amber">{filtros.busqueda}</span>}
               </div>
             </div>
-            {resultados.length > 0 ? (
-              <div className="alert alert-success">
-                <i className="bi bi-check-circle me-2"></i>
-                Encontramos <strong>{resultados.length}</strong> opciones ordenadas por mejor relación calidad-precio.
-              </div>
-            ) : (
-              <div className="alert alert-warning">
-                <i className="bi bi-exclamation-triangle me-2"></i>
-                No se encontraron productos con esos criterios. Intenta ajustar los filtros.
-              </div>
-            )}
+            <button className="btn tq-btn-outline-indigo" onClick={handleReset}>
+              <i className="bi bi-arrow-clockwise me-2"></i>Nueva búsqueda
+            </button>
           </div>
-        </div>
 
-        {resultados.length > 0 ? (
-          <div className="row g-4">
-            {resultados.map((producto, index) => {
-              // Calcular score para mostrar
-              const score = ((producto.caracteristicas_especiales?.length || 0) / (producto.precio / 1000)).toFixed(2);
-              
-              return (
-                <div key={`${producto.id}-${index}`} className="col-12">
-                  <div className="card shadow-lg border-0">
-                    {/* Header con ranking */}
-                    <div className="card-header py-3" style={{ 
-                      background: `linear-gradient(135deg, ${
-                        index === 0 ? '#ffd700, #ffed4e' : // Oro para #1
-                        index === 1 ? '#c0c0c0, #e8e8e8' : // Plata para #2
-                        index === 2 ? '#cd7f32, #e5a869' : // Bronce para #3
-                        '#007bff, #0056b3' // Azul para el resto
-                      })`
-                    }}>
-                      <div className="row align-items-center">
-                        <div className="col-md-8">
-                          <h3 className="mb-0 text-white">
-                            {index === 0 && <i className="bi bi-trophy-fill me-2"></i>}
-                            {index === 1 && <i className="bi bi-award-fill me-2"></i>}
-                            {index === 2 && <i className="bi bi-gem me-2"></i>}
-                            {index > 2 && <i className="bi bi-star-fill me-2"></i>}
-                            Opción #{index + 1}
-                            {index === 0 && (
-                              <span className="badge bg-white text-warning ms-3">
-                                ¡RECOMENDADO!
-                              </span>
-                            )}
-                          </h3>
-                        </div>
-                        <div className="col-md-4 text-md-end">
-                          <div className="text-white">
-                            <small className="d-block" style={{ opacity: 0.9 }}>Score calidad-precio</small>
-                            <strong className="fs-5">{score}</strong>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+          {resultados.length === 0 ? (
+            <div className="text-center py-5">
+              <i className="bi bi-search tq-empty-icon"></i>
+              <h3 className="mt-4 tq-text-primary">Sin resultados</h3>
+              <p className="tq-text-muted">No se encontraron productos con esos criterios. Intenta ajustar los filtros.</p>
+              <button className="btn tq-btn-primary btn-lg mt-2" onClick={handleReset}><i className="bi bi-arrow-clockwise me-2"></i>Intentar de nuevo</button>
+            </div>
+          ) : (
+            <div className="row g-4">
+              {resultados.map((producto, index) => {
+                const esFav = !!favoritos.find(p => p._id === producto._id);
+                const isTop = index === 0;
+                const accentColor = rankAccents[index] || '#6366f1';
 
-                    {/* Cuerpo del producto */}
-                    <div className="card-body p-4">
-                      <div className="row g-4">
-                        {/* Imagen */}
-                        <div className="col-md-4">
-                          <div className="position-relative">
-                            {producto.imagen ? (
-                              <img 
-                                src={producto.imagen} 
-                                alt={producto.nombre}
-                                className="img-fluid rounded shadow-sm"
-                                style={{ 
-                                  width: '100%',
-                                  height: '250px', 
-                                  objectFit: 'contain', 
-                                  backgroundColor: '#f8f9fa',
-                                  padding: '15px'
-                                }}
-                                onError={(e) => {
-                                  e.target.style.display = 'none';
-                                  e.target.nextSibling.style.display = 'flex';
-                                }}
-                              />
-                            ) : null}
-                            <div 
-                              className="bg-light rounded shadow-sm d-none align-items-center justify-content-center" 
-                              style={{ height: '250px' }}
-                            >
-                              <i className={`bi bi-${getCategoryIcon(filtros.categoria)} text-secondary`} style={{ fontSize: '64px' }}></i>
-                            </div>
-                          </div>
-                        </div>
+                return (
+                  <div key={producto._id} className={isTop ? 'col-12' : 'col-12 col-lg-6'}>
+                    <div className="card border-0 tq-card tq-card--hover h-100" style={{ overflow: 'hidden' }}>
+                      {/* Franja de rango */}
+                      <div style={{ height: '4px', background: `linear-gradient(90deg, ${accentColor}, transparent)` }}></div>
 
-                        {/* Información */}
-                        <div className="col-md-8">
-                          <div className="d-flex justify-content-between align-items-start mb-3">
-                            <div>
-                              <h4 className="mb-2">{producto.nombre}</h4>
-                              <h6 className="text-muted mb-0">
-                                <i className="bi bi-tag me-2"></i>
-                                {producto.marca}
-                              </h6>
-                            </div>
-                            <div className="text-end">
-                              <div className="text-muted small">Precio</div>
-                              <h3 className="text-primary mb-0">
-                                {new Intl.NumberFormat('es-MX', {
-                                  style: 'currency',
-                                  currency: 'MXN',
-                                  minimumFractionDigits: 0
-                                }).format(producto.precio)}
-                              </h3>
-                            </div>
-                          </div>
-
-                          {/* Especificaciones */}
-                          <div className="row g-2 mb-3">
-                            {Object.entries(producto)
-                              .filter(([key]) => !['id', 'nombre', 'marca', 'precio', 'imagen', 'caracteristicas_especiales'].includes(key))
-                              .slice(0, 6)
-                              .map(([key, value], idx) => (
-                                <div key={idx} className="col-md-6">
-                                  <div className="card border bg-light">
-                                    <div className="card-body py-2 px-3">
-                                      <small className="text-muted text-uppercase d-block" style={{ fontSize: '11px' }}>
-                                        {key.replace(/_/g, ' ')}
-                                      </small>
-                                      <strong className="text-dark" style={{ fontSize: '14px' }}>
-                                        {value}
-                                      </strong>
-                                    </div>
-                                  </div>
+                      <div className="card-body p-4">
+                        <div className={isTop ? 'row g-4 align-items-center' : ''}>
+                          {/* Imagen */}
+                          <div className={isTop ? 'col-md-3 text-center' : 'text-center mb-3'}>
+                            <div className="position-relative d-inline-block">
+                              {/* Insignia de rango */}
+                              <div className="position-absolute d-flex align-items-center justify-content-center"
+                                style={{ top: -8, left: -8, width: 40, height: 40, borderRadius: '50%', background: accentColor, zIndex: 2, boxShadow: `0 0 12px ${accentColor}50` }}>
+                                <i className={`bi ${rankMedals[index]} text-white`} style={{ fontSize: '18px' }}></i>
+                              </div>
+                              {producto.imagen && !imgErrors[producto._id] ? (
+                                <img src={producto.imagen} alt={producto.nombre} className="rounded-3"
+                                  style={{ height: isTop ? '200px' : '140px', width: isTop ? '200px' : '140px', objectFit: 'contain', background: 'var(--tq-bg-base)', padding: '12px' }}
+                                  onError={() => setImgErrors(p => ({ ...p, [producto._id]: true }))} />
+                              ) : (
+                                <div className="rounded-3 d-flex align-items-center justify-content-center"
+                                  style={{ height: isTop ? '200px' : '140px', width: isTop ? '200px' : '140px', background: 'var(--tq-bg-base)' }}>
+                                  <i className={`bi bi-${getCategoryIcon(filtros.categoria)} tq-text-faint`} style={{ fontSize: isTop ? '64px' : '48px' }}></i>
                                 </div>
-                              ))
-                            }
+                              )}
+                            </div>
                           </div>
 
-                          {/* Características especiales */}
-                          {producto.caracteristicas_especiales && producto.caracteristicas_especiales.length > 0 && (
-                            <div className="mb-3">
-                              <h6 className="mb-2">
-                                <i className="bi bi-star-fill text-warning me-2"></i>
-                                Características especiales:
-                              </h6>
-                              <div className="d-flex flex-wrap gap-2">
-                                {producto.caracteristicas_especiales.map((caract, idx) => (
-                                  <span key={idx} className="badge bg-success" style={{ fontSize: '13px' }}>
-                                    <i className="bi bi-check-circle me-1"></i>
-                                    {caract}
-                                  </span>
-                                ))}
+                          {/* Info */}
+                          <div className={isTop ? 'col-md-9' : ''}>
+                            <div className="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+                              <div>
+                                <div className="d-flex align-items-center gap-2 mb-1">
+                                  <span className="fw-bold" style={{ color: accentColor, fontSize: '13px' }}>{rankLabels[index]}</span>
+                                  {isTop && <span className="badge tq-badge-green" style={{ fontSize: '10px' }}>RECOMENDADO</span>}
+                                </div>
+                                <h5 className={`fw-bold mb-1 tq-text-primary ${isTop ? 'fs-4' : ''}`}>{producto.nombre}</h5>
+                                <span className="badge tq-badge-indigo">{producto.marca}</span>
+                              </div>
+                              <div className="text-end">
+                                <div className="tq-text-muted" style={{ fontSize: '11px' }}>PRECIO</div>
+                                <div className={`tq-text-indigo fw-bold ${isTop ? 'fs-4' : 'fs-5'}`}>{formatPrecio(producto.precio)}</div>
+                                {producto.score > 0 && (
+                                  <div className="tq-text-muted mt-1" style={{ fontSize: '11px' }}>
+                                    Score: <strong className="tq-text-indigo">{producto.score.toFixed(1)}</strong>
+                                  </div>
+                                )}
                               </div>
                             </div>
-                          )}
 
-                          {/* Botones de acción */}
-                          <div className="d-flex gap-2 mt-3">
-                            <Link 
-                              to={`/producto/${filtros.categoria}/${producto.id}`}
-                              className="btn btn-primary"
-                            >
-                              <i className="bi bi-eye me-2"></i>
-                              Ver detalles completos
-                            </Link>
-                            <button 
-                              className="btn btn-outline-primary"
-                              onClick={() => handleAddToCompare(producto, filtros.categoria)}
-                            >
-                              <i className="bi bi-plus-circle me-2"></i>
-                              Agregar a comparar
-                            </button>
+                            {/* Especificaciones */}
+                            <div className={`row g-2 mb-3 ${isTop ? '' : 'mt-2'}`}>
+                              {Object.entries(producto)
+                                .filter(([k, v]) => !['_id', 'id', 'nombre', 'marca', 'precio', 'imagen', 'caracteristicas_especiales', 'categoria', '__v', 'creadoPor', 'createdAt', 'updatedAt', 'score', 'id_original', 'calificacion', 'disponible', 'descripcion'].includes(k) && typeof v === 'string')
+                                .slice(0, isTop ? 6 : 3)
+                                .map(([k, v], i) => (
+                                  <div key={i} className={isTop ? 'col-md-4 col-6' : 'col-6'}>
+                                    <div className="tq-spec-card p-2">
+                                      <div className="tq-text-label" style={{ fontSize: '10px' }}>{k.replace(/_/g, ' ')}</div>
+                                      <div className="tq-text-secondary" style={{ fontSize: '12px', fontWeight: 600 }}>{v}</div>
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+
+                            {/* Características */}
+                            {producto.caracteristicas_especiales?.length > 0 && (
+                              <div className="d-flex flex-wrap gap-1 mb-3">
+                                {producto.caracteristicas_especiales.slice(0, isTop ? 6 : 3).map((c, i) => (
+                                  <span key={i} className="badge tq-badge-green"><i className="bi bi-check2 me-1"></i>{c}</span>
+                                ))}
+                                {producto.caracteristicas_especiales.length > (isTop ? 6 : 3) && (
+                                  <span className="badge tq-badge-indigo" style={{ fontSize: '10px' }}>+{producto.caracteristicas_especiales.length - (isTop ? 6 : 3)}</span>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Acciones */}
+                            <div className="d-flex gap-2 flex-wrap">
+                              <Link to={`/producto/${filtros.categoria}/${producto._id}`} className={`btn ${isTop ? '' : 'btn-sm'} tq-btn-primary`}>
+                                <i className="bi bi-eye me-2"></i>Ver detalles
+                              </Link>
+                              <button className={`btn ${isTop ? '' : 'btn-sm'} tq-btn-outline-cyan`} onClick={() => handleAgregarComparar(producto)}>
+                                <i className="bi bi-plus-circle me-2"></i>Comparar
+                              </button>
+                              <button className={`btn ${isTop ? '' : 'btn-sm'}`} onClick={() => handleToggleFavorito(producto)}
+                                style={{ background: esFav ? 'var(--tq-red)' : 'rgba(239,68,68,0.1)', color: esFav ? 'white' : 'var(--tq-red-light)', border: esFav ? 'none' : '1px solid rgba(239,68,68,0.2)', borderRadius: 'var(--tq-radius-sm)' }}>
+                                <i className={`bi bi-heart${esFav ? '-fill' : ''} me-2`}></i>{esFav ? 'Guardado' : 'Favorito'}
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : null}
+                );
+              })}
+            </div>
+          )}
 
-        <div className="text-center mt-4">
-          <button className="btn btn-outline-primary btn-lg" onClick={handleReset}>
-            <i className="bi bi-arrow-clockwise me-2"></i>
-            Hacer otra búsqueda
-          </button>
+          <div className="text-center mt-5">
+            <button className="btn btn-lg tq-btn-outline-indigo" onClick={handleReset}>
+              <i className="bi bi-arrow-clockwise me-2"></i>Nueva búsqueda
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
+  // ---- Vista del formulario ----
   return (
-    <div className="container py-5">
-      <div className="row justify-content-center">
-        <div className="col-lg-10">
-          {/* Header */}
-          <div className="text-center mb-4">
-            <h1 className="display-5 fw-bold mb-3">
-              <i className="bi bi-stars text-primary me-2"></i>
-              Búsqueda Inteligente
-            </h1>
-            <p className="lead text-muted">
-              Encuentra los <strong>5 mejores productos</strong> según tus necesidades y presupuesto
-            </p>
-          </div>
-
-          <div className="card shadow-lg border-0">
-            <div className="card-header bg-primary text-white py-3">
-              <div className="d-flex align-items-center">
-                <i className="bi bi-search fs-4 me-2"></i>
-                <div>
-                  <h4 className="mb-0">Configura tu búsqueda</h4>
-                  <small>Todos los campos son opcionales excepto la categoría</small>
-                </div>
+    <div className="tq-page">
+      {/* Encabezado hero */}
+      <div className="tq-hero" style={{ padding: '50px 0 40px' }}>
+        <div className="tq-page-bg-glow tq-page-bg-glow--hero"></div>
+        <div className="container position-relative" style={{ zIndex: 1 }}>
+          <div className="text-center">
+            <div className="mb-3">
+              <div className="d-inline-flex align-items-center justify-content-center mb-3"
+                style={{ width: 72, height: 72, borderRadius: '20px', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)' }}>
+                <i className="bi bi-stars tq-text-indigo" style={{ fontSize: '32px' }}></i>
               </div>
             </div>
-            <div className="card-body p-4">
-              <form onSubmit={buscarProductos}>
-                {/* Categoría */}
-                <div className="mb-4">
-                  <label className="form-label fw-bold fs-5">
-                    <i className="bi bi-grid-3x3-gap me-2 text-primary"></i>
-                    1. ¿Qué tipo de dispositivo buscas? 
-                    <span className="text-danger ms-1">*</span>
-                  </label>
-                  <select 
-                    className="form-select form-select-lg shadow-sm"
-                    name="categoria"
-                    value={filtros.categoria}
-                    onChange={handleChange}
-                    required
-                    style={{ borderWidth: '2px' }}
-                  >
-                    <option value="">-- Selecciona una categoría --</option>
-                    <option value="celulares">📱 Celulares</option>
-                    <option value="tablets">📱 Tablets</option>
-                    <option value="monitores">🖥️ Monitores</option>
-                    <option value="teclados">⌨️ Teclados</option>
-                    <option value="ratones">🖱️ Ratones</option>
-                    <option value="audifonos">🎧 Audífonos</option>
-                  </select>
-                </div>
+            <h1 className="fw-bold mb-2 tq-hero-title" style={{ fontSize: '2.4rem' }}>Búsqueda Inteligente</h1>
+            <p className="tq-hero-subtitle mx-auto text-center" style={{ maxWidth: '600px' }}>
+              Nuestro algoritmo analiza precio, especificaciones y características para encontrar las <strong className="tq-text-indigo">5 mejores opciones</strong> según tus necesidades.
+            </p>
+          </div>
+        </div>
+      </div>
 
-                <hr className="my-4" />
-
-                {/* Presupuesto */}
-                <div className="mb-4">
-                  <label className="form-label fw-bold fs-5">
-                    <i className="bi bi-currency-dollar me-2 text-success"></i>
-                    2. ¿Cuál es tu presupuesto?
-                  </label>
-                  <p className="text-muted small mb-3">
-                    <i className="bi bi-info-circle me-1"></i>
-                    Define tu rango de precio en pesos mexicanos (MXN)
-                  </p>
-                  <div className="row g-3">
-                    <div className="col-md-6">
-                      <div className="input-group input-group-lg">
-                        <span className="input-group-text">$</span>
-                        <input
-                          type="number"
-                          className="form-control shadow-sm"
-                          name="presupuestoMin"
-                          placeholder="Precio mínimo"
-                          value={filtros.presupuestoMin}
-                          onChange={handleChange}
-                          min="0"
-                          step="100"
-                        />
-                      </div>
-                      <small className="text-muted">Ejemplo: 5000</small>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="input-group input-group-lg">
-                        <span className="input-group-text">$</span>
-                        <input
-                          type="number"
-                          className="form-control shadow-sm"
-                          name="presupuestoMax"
-                          placeholder="Precio máximo"
-                          value={filtros.presupuestoMax}
-                          onChange={handleChange}
-                          min="0"
-                          step="100"
-                        />
-                      </div>
-                      <small className="text-muted">Ejemplo: 15000</small>
+      <div className="container" style={{ marginTop: '-30px', position: 'relative', zIndex: 2 }}>
+        <div className="row justify-content-center">
+          <div className="col-lg-9">
+            <div className="card border-0 tq-card--auth" style={{ borderRadius: '20px' }}>
+              <div className="card-body p-4 p-md-5">
+                <form onSubmit={buscar}>
+                  {/* Paso 1 — Categoría */}
+                  <div className="mb-4">
+                    <label className="form-label fw-bold tq-text-secondary mb-3">
+                      <span className="badge me-2 tq-badge-count" style={{ fontSize: '11px' }}>1</span>
+                      Tipo de dispositivo <span className="tq-text-red">*</span>
+                    </label>
+                    <div className="row g-2">
+                      {categoriasInfo.map(cat => (
+                        <div key={cat.value} className="col-4 col-md-2">
+                          <div className={`text-center p-3 rounded-3 cursor-pointer`}
+                            style={{
+                              background: filtros.categoria === cat.value ? 'rgba(99,102,241,0.2)' : 'var(--tq-bg-base)',
+                              border: filtros.categoria === cat.value ? '2px solid var(--tq-indigo)' : '1px solid var(--tq-border-input)',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s',
+                              borderRadius: '12px',
+                            }}
+                            onClick={() => setFiltros(p => ({ ...p, categoria: cat.value, marca: '' }))}>
+                            <i className={`bi bi-${cat.icon} d-block mb-1`}
+                              style={{ fontSize: '24px', color: filtros.categoria === cat.value ? 'var(--tq-indigo-light)' : 'var(--tq-text-faint)' }}></i>
+                            <small style={{
+                              fontSize: '11px', fontWeight: 600,
+                              color: filtros.categoria === cat.value ? 'var(--tq-indigo-light)' : 'var(--tq-text-muted)'
+                            }}>{cat.label}</small>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                </div>
 
-                <hr className="my-4" />
+                  {/* Paso 2 — Presupuesto */}
+                  <div className="mb-4">
+                    <label className="form-label fw-bold tq-text-secondary">
+                      <span className="badge me-2 tq-badge-count" style={{ fontSize: '11px' }}>2</span>
+                      Presupuesto <span className="tq-text-muted fw-normal">(opcional)</span>
+                    </label>
+                    <div className="row g-3">
+                      <div className="col-6">
+                        <div className="input-group">
+                          <span className="input-group-text tq-input-icon">$</span>
+                          <input type="number" className="form-control tq-input" name="presupuestoMin" placeholder="Mínimo" value={filtros.presupuestoMin} onChange={handleChange} min="0" />
+                        </div>
+                      </div>
+                      <div className="col-6">
+                        <div className="input-group">
+                          <span className="input-group-text tq-input-icon">$</span>
+                          <input type="number" className="form-control tq-input" name="presupuestoMax" placeholder="Máximo" value={filtros.presupuestoMax} onChange={handleChange} min="0" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-                {/* Marca */}
-                {filtros.categoria ? (
-                  <>
+                  {/* Paso 3 — Marca */}
+                  {filtros.categoria && marcasDisponibles.length > 0 && (
                     <div className="mb-4">
-                      <label className="form-label fw-bold fs-5">
-                        <i className="bi bi-tag me-2 text-info"></i>
-                        3. ¿Prefieres alguna marca específica?
+                      <label className="form-label fw-bold tq-text-secondary">
+                        <span className="badge me-2 tq-badge-count" style={{ fontSize: '11px' }}>3</span>
+                        Marca preferida <span className="tq-text-muted fw-normal">(opcional)</span>
                       </label>
-                      <p className="text-muted small mb-3">
-                        <i className="bi bi-info-circle me-1"></i>
-                        Filtra por tu marca favorita o deja &quot;Todas las marcas&quot;
-                      </p>
-                      <select 
-                        className="form-select form-select-lg shadow-sm"
-                        name="marca"
-                        value={filtros.marca}
-                        onChange={handleChange}
-                      >
-                        <option value="">✨ Todas las marcas</option>
-                        {getMarcasDisponibles().map(marca => (
-                          <option key={marca} value={marca}>🏷️ {marca}</option>
-                        ))}
+                      <select className="form-select tq-select" name="marca" value={filtros.marca} onChange={handleChange}>
+                        <option value="">Todas las marcas</option>
+                        {marcasDisponibles.map(m => <option key={m} value={m}>{m}</option>)}
                       </select>
                     </div>
+                  )}
 
-                    <hr className="my-4" />
-                  </>
-                ) : (
-                  <div className="alert alert-info">
-                    <i className="bi bi-info-circle me-2"></i>
-                    Selecciona una categoría primero para ver las marcas disponibles
-                  </div>
-                )}
-
-                {/* Búsqueda por texto */}
-                <div className="mb-4">
-                  <label className="form-label fw-bold fs-5">
-                    <i className="bi bi-search me-2 text-warning"></i>
-                    4. ¿Qué características buscas?
-                  </label>
-                  <p className="text-muted small mb-3">
-                    <i className="bi bi-info-circle me-1"></i>
-                    Escribe palabras clave de lo que necesitas (ej: gaming, batería, cámara, etc.)
-                  </p>
-                  <div className="input-group input-group-lg">
-                    <span className="input-group-text">
-                      <i className="bi bi-search"></i>
-                    </span>
-                    <input
-                      type="text"
-                      className="form-control shadow-sm"
-                      name="busqueda"
-                      placeholder="Ej: 'gaming', 'fotografía', 'batería larga', 'pantalla grande'..."
-                      value={filtros.busqueda}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="mt-2">
-                    <small className="text-muted">
-                      <strong>Ejemplos:</strong>
-                    </small>
+                  {/* Paso 4 — Palabras clave */}
+                  <div className="mb-4">
+                    <label className="form-label fw-bold tq-text-secondary">
+                      <span className="badge me-2 tq-badge-count" style={{ fontSize: '11px' }}>4</span>
+                      Palabras clave <span className="tq-text-muted fw-normal">(opcional)</span>
+                    </label>
+                    <input type="text" className="form-control tq-input" name="busqueda" placeholder="Ej: gaming, batería, cámara..." value={filtros.busqueda} onChange={handleChange} />
                     <div className="d-flex flex-wrap gap-2 mt-2">
-                      <span className="badge bg-light text-dark border">gaming</span>
-                      <span className="badge bg-light text-dark border">fotografía</span>
-                      <span className="badge bg-light text-dark border">batería</span>
-                      <span className="badge bg-light text-dark border">USB-C</span>
-                      <span className="badge bg-light text-dark border">inalámbrico</span>
+                      {['gaming', 'fotografía', 'batería', 'USB-C', 'inalámbrico', 'profesional'].map(tag => (
+                        <span key={tag} className={`badge ${filtros.busqueda === tag ? 'tq-badge-count' : 'tq-badge-tag'}`}
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => setFiltros(p => ({ ...p, busqueda: p.busqueda === tag ? '' : tag }))}>
+                          {tag}
+                        </span>
+                      ))}
                     </div>
                   </div>
-                </div>
 
-                <hr className="my-4" />
+                  <hr className="tq-dropdown-divider my-4" />
 
-                {/* Botones */}
-                <div className="d-grid gap-3">
-                  <button 
-                    type="submit" 
-                    className="btn btn-primary btn-lg shadow-sm"
-                    style={{ fontSize: '18px', padding: '16px' }}
-                  >
-                    <i className="bi bi-stars me-2"></i>
-                    Buscar las Mejores 5 Opciones
-                  </button>
-                  <button 
-                    type="button" 
-                    className="btn btn-outline-secondary" 
-                    onClick={handleReset}
-                  >
-                    <i className="bi bi-arrow-clockwise me-2"></i>
-                    Limpiar todos los filtros
-                  </button>
-                </div>
-              </form>
+                  {/* Enviar */}
+                  <div className="d-grid gap-2">
+                    <button type="submit" className="btn btn-lg tq-btn-primary py-3" disabled={loading || !filtros.categoria}>
+                      {loading ? (
+                        <><span className="spinner-border spinner-border-sm me-2"></span>Analizando productos...</>
+                      ) : (
+                        <><i className="bi bi-stars me-2"></i>Encontrar las 5 mejores opciones</>
+                      )}
+                    </button>
+                    {(filtros.categoria || filtros.presupuestoMin || filtros.presupuestoMax || filtros.marca || filtros.busqueda) && (
+                      <button type="button" className="btn tq-btn-outline-indigo" onClick={handleReset}>
+                        <i className="bi bi-x-circle me-2"></i>Limpiar todo
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Espaciador */}
+      <div style={{ height: '60px' }}></div>
     </div>
   );
 }
-
-SmartSearch.propTypes = {
-  compararList: PropTypes.arrayOf(PropTypes.object).isRequired,
-  setCompararList: PropTypes.func.isRequired
-};
 
 export default SmartSearch;

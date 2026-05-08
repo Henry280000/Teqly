@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Comparador de Dispositivos</title>
+    <title>Teqly — Comparador de Dispositivos Electrónicos en México</title>
+    <meta name="description" content="Compara celulares, tablets, monitores, teclados, ratones y audífonos. Encuentra el mejor dispositivo con precios en MXN." />
     
     <!-- Bootswatch Lux Theme -->
     <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/lux/bootstrap.min.css" rel="stylesheet">
@@ -13,10 +14,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   </head>
   <body>
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('teqly-theme') || 'dark');</script>
+    <!-- Bootstrap Bundle with Popper (before React so dropdowns work) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

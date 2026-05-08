@@ -1,200 +1,94 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { obtenerProductosPorCategoria } from '../Store/Slices/productosSlice';
+import { agregarAComparar } from '../Store/Slices/compararSlice';
+import { agregarFavorito, quitarFavorito } from '../Store/Slices/favoritosSlice';
 import ProductCard from '../components/ProductCard';
 import FilterSidebar from '../components/FilterSidebar';
-import dispositivosData from '../data/dispositivos.json';
+import { toast } from 'react-toastify';
 
-function ProductList({ compararList, setCompararList }) {
+function ProductList() {
   const { categoria } = useParams();
-  const [productos, setProductos] = useState([]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { lista, loading, error } = useSelector((s) => s.productos);
+  const { lista: compararLista } = useSelector((s) => s.comparar);
+  const { lista: favoritos } = useSelector((s) => s.favoritos);
+  const { usuario } = useSelector((s) => s.auth);
   const [productosFiltrados, setProductosFiltrados] = useState([]);
   const [busqueda, setBusqueda] = useState('');
-  const [filtrosActuales, setFiltrosActuales] = useState({
-    precioMin: 0,
-    precioMax: Infinity,
-    marca: '',
-    ordenamiento: 'nombre',
-    filtrosEspecificos: {}
-  });
+  const [filtros, setFiltros] = useState({ precioMin: 0, precioMax: Infinity, marca: '', ordenamiento: 'nombre', filtrosEspecificos: {} });
+
+  useEffect(() => { if (categoria) { dispatch(obtenerProductosPorCategoria(categoria)); setBusqueda(''); } }, [categoria, dispatch]);
 
   useEffect(() => {
-    if (categoria && dispositivosData[categoria]) {
-      setProductos(dispositivosData[categoria]);
-      setProductosFiltrados(dispositivosData[categoria]);
-      setBusqueda(''); // Limpiar búsqueda al cambiar categoría
-    }
-  }, [categoria]);
+    if (!lista.length) return;
+    let r = [...lista];
+    r = r.filter(p => p.precio >= filtros.precioMin && p.precio <= filtros.precioMax);
+    if (filtros.marca) r = r.filter(p => p.marca === filtros.marca);
+    if (filtros.filtrosEspecificos) Object.entries(filtros.filtrosEspecificos).forEach(([a, v]) => { r = r.filter(p => p[a] === v); });
+    if (busqueda) { const s = busqueda.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); r = r.filter(p => p.nombre.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(s) || p.marca.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(s)); }
+    switch (filtros.ordenamiento) { case 'precio_asc': r.sort((a, b) => a.precio - b.precio); break; case 'precio_desc': r.sort((a, b) => b.precio - a.precio); break; case 'marca': r.sort((a, b) => a.marca.localeCompare(b.marca)); break; default: r.sort((a, b) => a.nombre.localeCompare(b.nombre)); }
+    setProductosFiltrados(r);
+  }, [busqueda, lista, filtros]);
 
-  // Aplicar filtros automáticamente cuando cambie la búsqueda o los filtros
-  useEffect(() => {
-    if (productos.length === 0) return;
-
-    let resultado = [...productos];
-
-    // Filtrar por precio
-    resultado = resultado.filter(p => 
-      p.precio >= filtrosActuales.precioMin && p.precio <= filtrosActuales.precioMax
-    );
-
-    // Filtrar por marca
-    if (filtrosActuales.marca) {
-      resultado = resultado.filter(p => p.marca === filtrosActuales.marca);
-    }
-
-    // Filtrar por atributos específicos
-    if (filtrosActuales.filtrosEspecificos) {
-      Object.entries(filtrosActuales.filtrosEspecificos).forEach(([atributo, valor]) => {
-        resultado = resultado.filter(p => p[atributo] === valor);
-      });
-    }
-
-    // Filtrar por búsqueda
-    if (busqueda) {
-      // función para eliminar acentos
-      const eliminarAcentos = (texto) => {
-        return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      };
-      
-      const busquedaSinAcentos = eliminarAcentos(busqueda.toLowerCase());
-      resultado = resultado.filter(p => 
-        eliminarAcentos(p.nombre.toLowerCase()).includes(busquedaSinAcentos) ||
-        eliminarAcentos(p.marca.toLowerCase()).includes(busquedaSinAcentos)
-      );
-    }
-
-    // Ordenar
-    switch (filtrosActuales.ordenamiento) {
-      case 'precio_asc':
-        resultado.sort((a, b) => a.precio - b.precio);
-        break;
-      case 'precio_desc':
-        resultado.sort((a, b) => b.precio - a.precio);
-        break;
-      case 'marca':
-        resultado.sort((a, b) => a.marca.localeCompare(b.marca));
-        break;
-      default:
-        resultado.sort((a, b) => a.nombre.localeCompare(b.nombre));
-    }
-
-    setProductosFiltrados(resultado);
-  }, [busqueda, productos, filtrosActuales]);
-
-  const handleFilter = (filtros) => {
-    setFiltrosActuales(filtros);
+  const handleAddToCompare = (p) => {
+    if (compararLista.length >= 4) { toast.warning('Solo puedes comparar hasta 4 productos'); return; }
+    if (compararLista.find(x => x._id === p._id && x.categoria === categoria)) { toast.info('Ya está en la comparación'); return; }
+    dispatch(agregarAComparar({ ...p, categoria })); toast.success('Agregado a comparación');
+  };
+  const handleToggleFav = (p) => {
+    if (!usuario) { toast.warning('Inicia sesión para guardar favoritos'); navigate('/login'); return; }
+    const fav = favoritos.find(x => x._id === p._id);
+    if (fav) { dispatch(quitarFavorito(p._id)); toast.info('Eliminado de favoritos'); } else { dispatch(agregarFavorito({ ...p, categoria })); toast.success('Agregado a favoritos'); }
   };
 
-  const handleAddToCompare = (producto, cat) => {
-    if (compararList.length >= 4) {
-      alert('Solo puedes comparar hasta 4 productos a la vez');
-      return;
-    }
-    
-    const existe = compararList.find(p => p.id === producto.id && p.categoria === cat);
-    if (existe) {
-      alert('Este producto ya está en la lista de comparación');
-      return;
-    }
+  const titles = { celulares: 'Celulares', tablets: 'Tablets', monitores: 'Monitores', teclados: 'Teclados', ratones: 'Ratones', audifonos: 'Audífonos' };
+  const icons = { celulares: 'phone', tablets: 'tablet', monitores: 'display', teclados: 'keyboard', ratones: 'mouse', audifonos: 'headphones' };
 
-    setCompararList([...compararList, { ...producto, categoria: cat }]);
-  };
-
-  const getCategoriaTitle = (cat) => {
-    const titles = {
-      celulares: 'Celulares',
-      tablets: 'Tablets',
-      monitores: 'Monitores',
-      teclados: 'Teclados',
-      ratones: 'Ratones',
-      audifonos: 'Audífonos'
-    };
-    return titles[cat] || cat;
-  };
+  if (loading) return (<div className="tq-page-centered"><div className="text-center"><div className="spinner-border tq-spinner"></div><p className="mt-3 tq-text-muted">Cargando productos...</p></div></div>);
+  if (error) return (<div className="container py-5"><div className="alert tq-alert-error"><i className="bi bi-exclamation-triangle me-2"></i>{error}</div></div>);
 
   return (
-    <div className="container-fluid py-4">
-      <div className="row">
-        {/* Sidebar de Filtros */}
-        <div className="col-lg-3 mb-4">
-          <FilterSidebar 
-            productos={productos}
-            onFilter={handleFilter}
-          />
-        </div>
-
-        {/* Lista de Productos */}
-        <div className="col-lg-9">
-          {/* Header con búsqueda */}
-          <div className="card shadow-sm mb-4">
-            <div className="card-body">
-              <div className="row align-items-center">
-                <div className="col-md-6">
-                  <h2 className="mb-0">
-                    <i className={`bi bi-${categoria === 'celulares' ? 'phone' : categoria === 'tablets' ? 'tablet' : categoria === 'monitores' ? 'display' : categoria === 'teclados' ? 'keyboard' : categoria === 'ratones' ? 'mouse' : 'headphones'} me-2`}></i>
-                    {getCategoriaTitle(categoria)}
-                  </h2>
-                  <p className="text-muted mb-0">
-                    {productosFiltrados.length} productos encontrados
-                  </p>
-                </div>
-                <div className="col-md-6">
-                  <div className="input-group">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Buscar por nombre o marca..."
-                      value={busqueda}
-                      onChange={(e) => setBusqueda(e.target.value)}
-                    />
-                    {busqueda && (
-                      <button 
-                        className="btn btn-outline-secondary"
-                        onClick={() => setBusqueda('')}
-                        type="button"
-                      >
-                        <i className="bi bi-x-lg"></i>
-                      </button>
-                    )}
+    <div className="tq-page">
+      <div className="container-fluid py-4 px-4">
+        <div className="row">
+          <div className="col-lg-3 mb-4"><FilterSidebar productos={lista} onFilter={setFiltros} /></div>
+          <div className="col-lg-9">
+            <div className="card border-0 mb-4 tq-card">
+              <div className="card-body">
+                <div className="row align-items-center">
+                  <div className="col-md-6">
+                    <h2 className="mb-0 tq-text-primary"><i className={`bi bi-${icons[categoria] || 'grid'} me-2 tq-text-indigo`}></i>{titles[categoria] || categoria}</h2>
+                    <p className="mb-0 tq-text-muted">{productosFiltrados.length} productos encontrados</p>
                   </div>
-                  {busqueda && (
-                    <small className="text-muted">
-                      <i className="bi bi-info-circle me-1"></i>
-                      Búsqueda en tiempo real activada
-                    </small>
-                  )}
+                  <div className="col-md-6">
+                    <div className="input-group">
+                      <input type="text" className="form-control tq-search-input" placeholder="Buscar por nombre o marca..." value={busqueda} onChange={e => setBusqueda(e.target.value)} />
+                      {busqueda && (<button className="btn tq-search-clear" onClick={() => setBusqueda('')}><i className="bi bi-x-lg"></i></button>)}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+            {compararLista.length > 0 && (
+              <div className="mb-4 d-flex align-items-center p-3 tq-compare-bar">
+                <i className="bi bi-arrow-left-right me-2 tq-text-indigo"></i>
+                <span className="tq-text-indigo" style={{ color: '#c7d2fe' }}>{compararLista.length} producto(s) en comparación</span>
+                <a href="/comparar" className="btn btn-sm ms-auto tq-btn-primary">Ver comparación</a>
+              </div>
+            )}
+            {productosFiltrados.length > 0 ? (
+              <div className="row">{productosFiltrados.map(p => (<ProductCard key={p._id} producto={p} categoria={categoria} onAddToCompare={handleAddToCompare} onToggleFavorito={handleToggleFav} esFavorito={!!favoritos.find(x => x._id === p._id)} />))}</div>
+            ) : (
+              <div className="text-center py-5"><i className="bi bi-search tq-empty-icon" style={{ fontSize: '48px' }}></i><p className="mt-3 tq-text-muted">No se encontraron productos con los filtros seleccionados</p></div>
+            )}
           </div>
-
-          {/* Grid de Productos */}
-          {productosFiltrados.length > 0 ? (
-            <div className="row">
-              {productosFiltrados.map(producto => (
-                <ProductCard
-                  key={producto.id}
-                  producto={producto}
-                  categoria={categoria}
-                  onAddToCompare={handleAddToCompare}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="alert alert-info text-center">
-              <i className="bi bi-info-circle me-2"></i>
-              No se encontraron productos con los filtros seleccionados
-            </div>
-          )}
         </div>
       </div>
     </div>
   );
 }
-
-ProductList.propTypes = {
-  compararList: PropTypes.arrayOf(PropTypes.object).isRequired,
-  setCompararList: PropTypes.func.isRequired
-};
 
 export default ProductList;

@@ -1,0 +1,313 @@
+/* Modo claro
+   Solo colores, fondos, bordes, sombras. Sin tamaños ni tipografía. */
+
+/* --- Variables --- */
+[data-theme="light"] {
+  --tq-bg-base: #f8fafc;
+  --tq-bg-card: #ffffff;
+  --tq-bg-input: #ffffff;
+  --tq-border-subtle: rgba(0, 0, 0, 0.06);
+  --tq-border-accent: rgba(0, 0, 0, 0.1);
+  --tq-border-input: #d1d5db;
+  --tq-border-strong: rgba(99, 102, 241, 0.4);
+  --tq-text-primary: #0f172a;
+  --tq-text-secondary: #475569;
+  --tq-text-muted: #64748b;
+  --tq-text-dim: #94a3b8;
+  --tq-text-faint: #cbd5e1;
+  --tq-gradient-dark: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  --tq-gradient-hero: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 50%, #f0f9ff 100%);
+  --tq-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --tq-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --tq-shadow-modal: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* --- Tarjetas --- */
+[data-theme="light"] .tq-card,
+[data-theme="light"] .tq-card--auth {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: var(--tq-shadow-card);
+}
+
+[data-theme="light"] .tq-card--hover:hover {
+  box-shadow: var(--tq-shadow-hover) !important;
+}
+
+[data-theme="light"] .tq-card-header {
+  background: rgba(99, 102, 241, 0.05) !important;
+}
+
+/* --- Navbar --- */
+[data-theme="light"] .tq-navbar {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .tq-navbar .nav-link { color: #475569 !important; }
+[data-theme="light"] .tq-navbar .nav-link:hover { color: var(--tq-indigo) !important; }
+
+[data-theme="light"] .tq-navbar-brand {
+  background: linear-gradient(135deg, #6366f1, #06b6d4) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* --- Footer (se mantiene oscuro) --- */
+[data-theme="light"] .tq-footer {
+  background: linear-gradient(135deg, #0f172a, #1e293b) !important;
+  border-top: none !important;
+}
+
+[data-theme="light"] .tq-footer-brand { color: white; }
+
+/* --- Inputs --- */
+[data-theme="light"] .tq-input,
+[data-theme="light"] .tq-select {
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .tq-input-icon {
+  background: #f9fafb !important;
+  border: 1px solid #d1d5db !important;
+  color: #6b7280 !important;
+}
+
+[data-theme="light"] .tq-input:focus,
+[data-theme="light"] .tq-select:focus {
+  border-color: var(--tq-indigo) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+}
+
+/* --- Dropdown --- */
+[data-theme="light"] .tq-dropdown-menu {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
+}
+
+[data-theme="light"] .tq-dropdown-item { color: #475569 !important; }
+
+[data-theme="light"] .tq-dropdown-item:hover {
+  background: #f1f5f9 !important;
+  color: var(--tq-indigo) !important;
+}
+
+[data-theme="light"] .tq-dropdown-divider { border-color: #e5e7eb !important; }
+
+/* --- Insignias --- */
+[data-theme="light"] .tq-badge-indigo {
+  background: rgba(99, 102, 241, 0.1) !important;
+  color: var(--tq-indigo) !important;
+  border: 1px solid rgba(99, 102, 241, 0.2) !important;
+}
+
+[data-theme="light"] .tq-badge-green {
+  background: rgba(16, 185, 129, 0.1) !important;
+  color: #059669 !important;
+}
+
+/* --- Páginas --- */
+[data-theme="light"] .tq-page { background: #f8fafc !important; }
+[data-theme="light"] .tq-page-centered { background: var(--tq-gradient-hero) !important; }
+
+/* --- Hero --- */
+[data-theme="light"] .tq-hero {
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 50%, #f0f9ff 100%) !important;
+}
+
+[data-theme="light"] .tq-hero-title {
+  color: #0f172a !important;
+  text-shadow: none;
+}
+
+[data-theme="light"] .tq-hero-subtitle { color: #334155 !important; }
+
+[data-theme="light"] .tq-hero-badge {
+  background: rgba(99, 102, 241, 0.15) !important;
+  color: #4338ca !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
+}
+
+[data-theme="light"] .tq-hero .btn-outline-light {
+  border-color: rgba(99, 102, 241, 0.4) !important;
+  color: #4338ca !important;
+  background: rgba(99, 102, 241, 0.08) !important;
+}
+
+[data-theme="light"] .tq-hero .btn-outline-light:hover {
+  background: rgba(99, 102, 241, 0.15) !important;
+  color: #3730a3 !important;
+}
+
+/* --- Badges flotantes del hero --- */
+[data-theme="light"] .tq-hero-float--green {
+  background: rgba(16, 185, 129, 0.12) !important;
+  color: #065f46 !important;
+}
+
+[data-theme="light"] .tq-hero-float--green span { color: #065f46 !important; }
+[data-theme="light"] .tq-hero-float--green i { color: #059669 !important; }
+
+[data-theme="light"] .tq-hero-float--indigo {
+  background: rgba(99, 102, 241, 0.12) !important;
+  color: #3730a3 !important;
+}
+
+[data-theme="light"] .tq-hero-float--indigo span { color: #3730a3 !important; }
+[data-theme="light"] .tq-hero-float--indigo i { color: #4338ca !important; }
+
+[data-theme="light"] .tq-hero-circle i {
+  color: #6366f1 !important;
+  opacity: 0.6 !important;
+}
+
+/* --- CTA (se mantiene oscuro) --- */
+[data-theme="light"] .tq-cta {
+  background: linear-gradient(135deg, #1e293b, #0f172a) !important;
+}
+
+/* --- Override de Bootstrap .card --- */
+[data-theme="light"] .card {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+  color: #1e293b !important;
+}
+
+[data-theme="light"] .card h5,
+[data-theme="light"] .card h6 { color: #1e293b !important; }
+[data-theme="light"] .card p { color: #475569 !important; }
+[data-theme="light"] .card .card-body { background: #ffffff !important; }
+[data-theme="light"] .card .card-footer { background: #ffffff !important; }
+
+/* --- Tarjetas de categoría --- */
+[data-theme="light"] .tq-cat-card { background: #ffffff !important; }
+[data-theme="light"] .tq-cat-card h6 { color: #1e293b !important; }
+[data-theme="light"] .tq-cat-card small { color: #64748b !important; }
+
+/* --- Imágenes de producto --- */
+[data-theme="light"] .tq-product-img,
+[data-theme="light"] .tq-product-img-placeholder { background: #f1f5f9 !important; }
+[data-theme="light"] .tq-product-img-placeholder i { color: #cbd5e1 !important; }
+
+/* --- Especificaciones --- */
+[data-theme="light"] .tq-spec-card {
+  background: #f8fafc !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+[data-theme="light"] .tq-feature-card,
+[data-theme="light"] .tq-feature-item {
+  background: rgba(16, 185, 129, 0.05) !important;
+  border: 1px solid rgba(16, 185, 129, 0.15) !important;
+}
+
+/* --- Comparar vacío --- */
+[data-theme="light"] .tq-compare-empty { border-color: #d1d5db !important; }
+
+/* --- Búsqueda --- */
+[data-theme="light"] .tq-search-input {
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .tq-search-clear {
+  background: #f9fafb !important;
+  border: 1px solid #d1d5db !important;
+}
+
+/* --- Filtros --- */
+[data-theme="light"] .tq-filter-label { color: #374151 !important; }
+
+/* --- Barra de comparación --- */
+[data-theme="light"] .tq-compare-bar {
+  background: rgba(99, 102, 241, 0.05) !important;
+  border: 1px solid rgba(99, 102, 241, 0.15) !important;
+}
+
+/* --- Alertas --- */
+[data-theme="light"] .tq-alert-error {
+  background: rgba(239, 68, 68, 0.05) !important;
+  color: #dc2626 !important;
+}
+
+/* --- Botón favorito --- */
+[data-theme="light"] .tq-fav-btn {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  color: #374151 !important;
+}
+
+/* --- Avatar --- */
+[data-theme="light"] .tq-navbar-avatar {
+  background: rgba(99, 102, 241, 0.1) !important;
+  border: 1px solid rgba(99, 102, 241, 0.2) !important;
+}
+
+/* --- Botón login navbar --- */
+[data-theme="light"] .tq-btn-nav-login {
+  border: 1px solid rgba(99, 102, 241, 0.3) !important;
+  color: var(--tq-indigo) !important;
+}
+
+/* --- Progreso --- */
+[data-theme="light"] .tq-progress-track { background: #e5e7eb !important; }
+
+/* --- Vacíos --- */
+[data-theme="light"] .tq-empty-icon { color: #cbd5e1 !important; }
+
+/* --- Scrollbar --- */
+[data-theme="light"] ::-webkit-scrollbar-track { background: #f1f5f9; }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: #cbd5e1; }
+
+/* --- Selección de texto --- */
+[data-theme="light"] ::selection { background: rgba(99, 102, 241, 0.2); color: #0f172a; }
+
+/* --- Botones outline visibles --- */
+[data-theme="light"] .tq-btn-outline-indigo {
+  background: rgba(99, 102, 241, 0.08) !important;
+  color: #4338ca !important;
+  border: 1px solid rgba(99, 102, 241, 0.3) !important;
+}
+
+[data-theme="light"] .tq-btn-outline-indigo:hover {
+  background: rgba(99, 102, 241, 0.15) !important;
+}
+
+[data-theme="light"] .tq-btn-outline-cyan {
+  background: rgba(6, 182, 212, 0.08) !important;
+  color: #0e7490 !important;
+  border: 1px solid rgba(6, 182, 212, 0.3) !important;
+}
+
+[data-theme="light"] .tq-btn-outline-red {
+  background: rgba(239, 68, 68, 0.08) !important;
+  color: #dc2626 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+/* --- Textos legibles --- */
+[data-theme="light"] .tq-text-brand {
+  background: linear-gradient(135deg, #4f46e5, #0e7490) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+[data-theme="light"] .tq-text-price {
+  background: linear-gradient(135deg, #4f46e5, #0e7490) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+[data-theme="light"] .tq-text-indigo { color: #4338ca !important; }
+[data-theme="light"] .tq-text-cyan { color: #0e7490 !important; }
+[data-theme="light"] .tq-text-green { color: #059669 !important; }
+[data-theme="light"] .tq-text-red { color: #dc2626 !important; }
+[data-theme="light"] .tq-text-amber { color: #d97706 !important; }
+[data-theme="light"] .tq-text-label { color: #4338ca !important; }
