@@ -32,9 +32,19 @@ function Navbar() {
     <nav className={`navbar navbar-expand-lg ${theme === 'dark' ? 'navbar-dark' : 'navbar-light'} tq-navbar`}>
       <div className="container-fluid px-4">
         <Link className="navbar-brand fw-bold d-flex align-items-center gap-2 tq-navbar-brand" to="/">Teqly</Link>
-        <button className="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span className="navbar-toggler-icon"></span>
-        </button>
+
+        {/* Toggle tema + hamburger (siempre visibles) */}
+        <div className="d-flex align-items-center gap-2 d-lg-none">
+          <button className="btn btn-sm tq-btn-outline-indigo" onClick={toggleTheme}
+            title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+            style={{ width: '34px', height: '34px', padding: 0, borderRadius: '50%' }}>
+            <i className={`bi bi-${theme === 'dark' ? 'sun-fill' : 'moon-fill'}`}></i>
+          </button>
+          <button className="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span className="navbar-toggler-icon"></span>
+          </button>
+        </div>
+
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto">
             <li className="nav-item"><Link className="nav-link" to="/">Inicio</Link></li>
@@ -69,8 +79,9 @@ function Navbar() {
               </li>
             )}
           </ul>
-          <ul className="navbar-nav ms-auto align-items-center">
-            <li className="nav-item me-2">
+          <ul className="navbar-nav ms-auto align-items-lg-center">
+            {/* Toggle tema (solo desktop) */}
+            <li className="nav-item me-2 d-none d-lg-block">
               <button className="btn btn-sm tq-btn-outline-indigo" onClick={toggleTheme} title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'} style={{ width: '36px', height: '36px', padding: 0, borderRadius: '50%' }}>
                 <i className={`bi bi-${theme === 'dark' ? 'sun-fill' : 'moon-fill'}`}></i>
               </button>
@@ -91,7 +102,7 @@ function Navbar() {
                 </ul>
               </li>
             ) : (
-              <div className="d-flex gap-2">
+              <div className="d-flex gap-2 mt-2 mt-lg-0">
                 <Link to="/login" className="btn btn-sm px-3 tq-btn-nav-login"><i className="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión</Link>
                 <Link to="/registro" className="btn btn-sm px-3 tq-btn-primary"><i className="bi bi-person-plus me-1"></i>Registrarse</Link>
               </div>
