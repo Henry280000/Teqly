@@ -10,6 +10,7 @@ import SmartSearch from './pages/SmartSearch';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
 import Favoritos from './pages/Favoritos';
+import AdminPanel from './pages/AdminPanel';
 import './App.css';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<Registro />} />
             <Route path="/favoritos" element={<Favoritos />} />
+            <Route path="/admin" element={<AdminPanel />} />
           </Routes>
         </main>
         <footer className="tq-footer">

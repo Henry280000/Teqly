@@ -3,6 +3,7 @@ import authReducer from './Slices/authSlice';
 import productosReducer from './Slices/productosSlice';
 import favoritosReducer from './Slices/favoritosSlice';
 import compararReducer from './Slices/compararSlice';
+import adminReducer from './Slices/adminSlice';
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     productos: productosReducer,
     favoritos: favoritosReducer,
     comparar: compararReducer,
+    admin: adminReducer,
   },
 });
 
